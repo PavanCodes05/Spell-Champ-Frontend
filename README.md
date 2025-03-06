@@ -2,15 +2,33 @@
 
 A new Flutter project.
 
-## Getting Started
+Spell-Champ-Frontend/
 
-This project is a starting point for a Flutter application.
+│── assets/               # Static assets like fonts, images, and icons
+│   ├── fonts/            # Custom fonts used in the app
+│   ├── images/           # PNG, JPG images
+│   ├── vectors/          # Logo
+│── lib/                  
+│   ├── common/           # Common utilities bloc and widgets
+│   ├── core/             # configures for app images,colors,vectors,url
+│   ├── data/             # API calls and data management
+│   ├── domain/           # user request logic
+│   ├── presentation/                        # UI & State Management
+│   │   ├── auth/         
+│   │   │   ├── pages/                       # Login, Signup, and authentication UI
+│   │   │   │   ├── Signin.dart              # Sign-in screen UI
+│   │   │   │   ├── Signup.dart              # Sign-up screen UI
+│   │   │   │   ├── Signup_or_Signin.dart    # Option screen for login/signup
+│   │   ├── home/         # Main home screen 
+│   │   │   ├── bloc/     # State management for home page
+│   │   │   ├── pages/    
+│   │   │   ├── widgets/  
+│   │   ├── intro/        
+│   │   │   ├── pages/    
+│   │   │   │   ├── welcome_screen.dart 
+│   │   ├── profile/      # User profile-related UI and logic
+│   │   │   ├── bloc/     # State management for profile
+│   │   │   ├── pages/    
+│   │   │   │   ├── profile.dart          # Profile screen UI
+│   ├── main.dart         # Entry point of the application
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
