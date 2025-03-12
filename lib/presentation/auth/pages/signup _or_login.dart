@@ -1,8 +1,9 @@
+// ignore: file_names
 import 'package:flutter/material.dart';
-import 'package:spell_champ_frontend/common/widgets/botton/basic_app_bottonn.dart';
+import 'package:spell_champ_frontend/common/widgets/button/basic_app_button.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_colors.dart';
-import 'package:spell_champ_frontend/login_screen.dart';
-import 'package:spell_champ_frontend/signup_screen.dart';
+import 'package:spell_champ_frontend/presentation/auth/pages/login_screen.dart';
+import 'package:spell_champ_frontend/presentation/auth/pages/signup_screen.dart';
 
 
 
@@ -56,11 +57,10 @@ class WelcomeScreen extends StatelessWidget {
                color: AppColors.lightblack
                )
                ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 40,),
             SizedBox(
               width: 150,
               child: BasicAppBotton(
-                
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
                 },
@@ -68,6 +68,7 @@ class WelcomeScreen extends StatelessWidget {
                 
               ),
             ),
+
             const SizedBox(height: 10,),
             SizedBox(
               width: 150,
@@ -85,3 +86,6 @@ class WelcomeScreen extends StatelessWidget {
     );
   }
 }
+
+
+
