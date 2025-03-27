@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:spell_champ_frontend/presentation/auth/pages/gradeselection.dart';
+
 
 void main() {
   runApp(
@@ -17,7 +19,7 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  final _formKey = GlobalKey<FormState>(); // ✅ Add FormKey for validation
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +48,7 @@ class _SignupScreenState extends State<SignupScreen> {
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 10),
               child: Form(
-                key: _formKey, // ✅ Assign the FormKey
+                key: _formKey,
                 child: Column(
                   children: [
                     SizedBox(
@@ -65,7 +67,6 @@ class _SignupScreenState extends State<SignupScreen> {
                             borderSide: BorderSide(color: Colors.black),
                           ),
                         ),
-                        onChanged: (String value) {},
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return "Please enter your name";
@@ -129,8 +130,11 @@ class _SignupScreenState extends State<SignupScreen> {
                     ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          // Perform signup action
-                          print("Signup successful");
+                          // Navigate to Grade Selection Page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) =>  GradeSelectionScreen()),
+                          );
                         }
                       },
                       child: Text("Signup"),
