@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_colors.dart';
 import 'package:spell_champ_frontend/presentation/auth/pages/forgot_password.dart';
+import 'package:spell_champ_frontend/presentation/auth/pages/grade_selection_screen.dart';
 import 'package:spell_champ_frontend/presentation/auth/pages/reset_password.dart';
+
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -9,163 +11,149 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-  
-      body:Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            
-
             const Text(
               "SPELL CHAMP",
               style: TextStyle(
                 fontSize: 26,
                 fontWeight: FontWeight.bold,
-                color: AppColors.spellchamp
-             ),
-            ),
-            const SizedBox(height: 20), //Space below login label
-
-            const Text("Login",       //page title
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black
-          ),
-          ),
-          const SizedBox(height: 20),
-
-          SizedBox(
-            width:300,
-            height: 50,
-
-          
-        
-             child: TextField(decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-                       
-                
-             
-              //const CustomTextField
-              hintText: "Email Id",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.black),
+                color: AppColors.spellchamp,
               ),
-             ),
-           ),
-           ), 
-        const SizedBox(
-              height: 10),
-             
+            ),
+            const SizedBox(height: 20), // Space below login label
+
+            const Text(
+              "Login", // Page title
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Email TextField
             SizedBox(
               width: 300,
               height: 50,
               child: TextField(
-                obscureText: true,  
                 decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                  
-            
-            
-              hintText:"Password",
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: BorderSide(color: Colors.white),
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: "Email Id",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: Colors.black),
+                  ),
+                ),
               ),
-              ),
-              ),
-              ),
-            const SizedBox(
-              height: 10,
             ),
-            Row(mainAxisAlignment: MainAxisAlignment.center,
+            const SizedBox(height: 10),
+
+            // Password TextField
+            SizedBox(
+              width: 300,
+              height: 50,
+              child: TextField(
+                obscureText: true,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: "Password",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            // Forgot Password & Reset Password Row
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                  Expanded(child: Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context, 
-                        MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-                      );
-                    },
-                    
-                       //Forgot password logic
-                      child: const Text('Forgot password?'
-                     
-                      ),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                        );
+                      },
+                      child: const Text('Forgot password?'),
+                    ),
                   ),
-                  ),
-                  ),
-              // Forgot password logic
-                  Expanded(child: Align(
+                ),
+                Expanded(
+                  child: Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton(
                       onPressed: () {
                         Navigator.push(
-                          context, 
+                          context,
                           MaterialPageRoute(builder: (context) => const ResetPasswordPage()),
                         );
                       },
-                    // Reset password logic
-                  child: const Text('Reset password?'
+                      child: const Text('Reset password?'),
+                    ),
                   ),
-             ),
+                ),
+              ],
             ),
-          ),
-        // Reset password logic
-          ],
-        ),
             const SizedBox(height: 10),
+
+            // Login Button (Navigate to Grade Selection Page)
             ElevatedButton(
               onPressed: () {
-                // Login logic
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) =>  GradeSelectionScreen()),
+                );
               },
               child: const Padding(
-
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 child: Text('Log in'),
+              ),
+            ),
+
+            // Divider for Google Login
+            Row(
+              children: [
+                Expanded(
+                  child: Divider(color: Colors.black, thickness: 1),
                 ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Text(
+                    "also log in with ",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Expanded(
+                  child: Divider(color: Colors.black, thickness: 1),
+                ),
+              ],
             ),
-            Row (
-          children: [
-            Expanded(
-            child: Divider(
-              color:Colors.black,
-              thickness: 1,
-            ),
-         ),
-         Padding(
-          padding:EdgeInsets.symmetric(horizontal:10),
-          child:Text(
-            "also log in with ",
-            style: TextStyle(fontSize:18,fontWeight: FontWeight.bold),
-          ),
-         ),
-         Expanded(
-          child: Divider(
-            color: Colors.black,
-            thickness:1
-          ),
-         ),
-          ],
-           ),
-           SizedBox(height: 20),
-           
+            const SizedBox(height: 20),
+
+            // Google Login Button
             Column(
-            children: [
-              ElevatedButton(onPressed: () {},
-               child: Text('Google'))
-            ],
-           )
+              children: [
+                ElevatedButton(
+                  onPressed: () {},
+                  child: const Text('Google'),
+                ),
+              ],
+            ),
           ],
         ),
-      )
-    ); 
+      ),
+    );
   }
 }
-
- 
