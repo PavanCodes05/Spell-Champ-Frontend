@@ -1,7 +1,7 @@
 # spell_champ_frontend
 
 A new Flutter project.
-
+```
 Spell-Champ-Frontend/
 
 │── assets/               # Static assets like fonts, images, and icons
@@ -32,3 +32,4 @@ Spell-Champ-Frontend/
 │   │   │   │   ├── profile.dart          # Profile screen UI
 │   ├── main.dart         # Entry point of the application
 
+```
