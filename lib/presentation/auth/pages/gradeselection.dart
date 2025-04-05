@@ -5,6 +5,8 @@ void main() {
 }
 
 class SpellChampApp extends StatelessWidget {
+  const SpellChampApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -15,6 +17,8 @@ class SpellChampApp extends StatelessWidget {
 }
 
 class GradeSelectionScreen extends StatelessWidget {
+  const GradeSelectionScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -101,7 +105,7 @@ class GradeSelectionScreen extends StatelessWidget {
 class GradeTile extends StatelessWidget {
   final int grade;
 
-  GradeTile({required this.grade});
+  const GradeTile({super.key, required this.grade});
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,3 @@
-// ignore: file_names
 import 'package:flutter/material.dart';
 import 'package:spell_champ_frontend/common/widgets/button/basic_app_button.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_colors.dart';

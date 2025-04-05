@@ -1,16 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_colors.dart';
-import 'package:spell_champ_frontend/presentation/auth/pages/forgot_password.dart';
 import 'package:spell_champ_frontend/presentation/auth/pages/gradeselection.dart';
-import 'package:spell_champ_frontend/presentation/auth/pages/reset_password.dart';
- 
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  bool isValidEmail(String email) {
+    return RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w]{2,4}$").hasMatch(email);
+  }
+
+  void _login(BuildContext context) {
+    final email = emailController.text.trim();
+    final password = passwordController.text;
+
+    if (email.isEmpty || !isValidEmail(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter a valid email")),
+      );
+      return;
+    }
+
+    if (password.isEmpty || password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Password must be at least 6 characters")),
+      );
+      return;
+    }
+
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const GradeSelectionScreen()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -23,10 +60,9 @@ class LoginScreen extends StatelessWidget {
                 color: AppColors.spellchamp,
               ),
             ),
-            const SizedBox(height: 20), // Space below login label
-
+            const SizedBox(height: 20),
             const Text(
-              "Login", // Page title
+              "Login",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -35,11 +71,11 @@ class LoginScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
 
-            // Email TextField
             SizedBox(
               width: 300,
               height: 50,
               child: TextField(
+                controller: emailController,
                 decoration: InputDecoration(
                   filled: true,
                   fillColor: Colors.white,
@@ -53,11 +89,11 @@ class LoginScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
 
-            // Password TextField
             SizedBox(
               width: 300,
               height: 50,
               child: TextField(
+                controller: passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                   filled: true,
@@ -65,91 +101,26 @@ class LoginScreen extends StatelessWidget {
                   hintText: "Password",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: Colors.white),
+                    borderSide: const BorderSide(color: Colors.black),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 10),
+           SizedBox(height: 30),
 
-            // Forgot Password & Reset Password Row
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
-                        );
-                      },
-                      child: const Text('Forgot password?'),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const ResetPasswordPage()),
-                        );
-                      },
-                      child: const Text('Reset password?'),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
+            SizedBox(
 
-            // Login Button (Navigate to Grade Selection Page)
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) =>  GradeSelectionScreen()),
-                );
-              },
-              child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                child: Text('Log in'),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.signupbackground,
+                ),
+                onPressed: () => _login(context),
+                child: const Text('Log in',
+                style: TextStyle(
+                  color: Colors.white
+                ),
+                ),
               ),
-            ),
-
-            // Divider for Google Login
-            Row(
-              children: [
-                Expanded(
-                  child: Divider(color: Colors.black, thickness: 1),
-                ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: Text(
-                    "also log in with ",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                Expanded(
-                  child: Divider(color: Colors.black, thickness: 1),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-
-            // Google Login Button
-            Column(
-              children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Google'),
-                ),
-              ],
             ),
           ],
         ),
