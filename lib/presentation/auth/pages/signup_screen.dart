@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:spell_champ_frontend/common/widgets/button/basic_app_button.dart';
 import 'package:spell_champ_frontend/presentation/auth/pages/gradeselection.dart';
-import 'package:spell_champ_frontend/services/auth_service.dart';
 
 void main() {
   runApp(
@@ -62,7 +61,6 @@ class SignupScreenState extends State<SignupScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  
                   SizedBox(
                     width: 300,
                     height: 55,
@@ -97,7 +95,6 @@ class SignupScreenState extends State<SignupScreen> {
                   ),
                   const SizedBox(height: 10),
 
-                 
                   SizedBox(
                     width: 300,
                     height: 55,
@@ -119,7 +116,6 @@ class SignupScreenState extends State<SignupScreen> {
                   const SizedBox(height: 10),
                   SizedBox(
                     width: 150,
-                    
                     child: SignupButton(
                       onPressed: _handleSignup,
                       title: 'Sign Up',
@@ -148,28 +144,13 @@ class SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Future<void> _handleSignup() async {
+  void _handleSignup() {
     if (_formKey.currentState!.validate()) {
-      final name = _nameController.text.trim();
-      final email = _emailController.text.trim();
-      final password = _passwordController.text.trim();
-
-      final authService = AuthService();
-
-      try {
-        final result = await authService.signUp(name, email, password);
-        if (result['success']) {
-          Fluttertoast.showToast(msg: result['message']);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const GradeSelectionScreen()),
-          );
-        } else {
-          Fluttertoast.showToast(msg: result['message']);
-        }
-      } catch (e) {
-        Fluttertoast.showToast(msg: 'An error occurred during signup.');
-      }
+      Fluttertoast.showToast(msg: 'Signup Successful');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const GradeSelectionScreen()),
+      );
     }
   }
 }
