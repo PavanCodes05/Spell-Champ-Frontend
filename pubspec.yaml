@@ -33,7 +33,34 @@ flutter:
     - assets/images/grade_10.png
     - assets/images/grade_11.png
     - assets/images/grade_12.png
-    - assets/vectors/
+    - assets/vectors/diamond_50.png
+    - assets/vectors/diamond.png
+    - assets/vectors/exercise.png
+    - assets/vectors/quiz.png
+    - assets/vectors/result.png
+    - assets/vectors/result-image.png
+    - assets/vectors/trophy 1.png
+    - assets/vectors/trophy 2.png
+    - assets/vectors/trophy 3.png
+    - assets/fonts/quiz-font.png
+    - assets/fonts/result-font.png
+    - assets/vectors/quiz-image1.png
+    - assets/vectors/quiz-image2.png
+    - assets/vectors/quiz-image3.png
+    - assets/vectors/quiz-image4.png
+    - assets/vectors/quiz-image5.png
+    - assets/vectors/exercise-box.png
+    - assets/fonts/Exercise-1.png
+    - assets/fonts/Exercise-2.png
+    - assets/fonts/Exercise-3.png
+    - assets/fonts/Exercise-4.png
+    - assets/fonts/Exercise-5.png
+    - assets/fonts/Exercise-6.png
+    - assets/fonts/Exercise-7.png
+    - assets/fonts/Exercise-8.png
+    - assets/fonts/Exercise-9.png
+    - assets/fonts/Exercise-10.png
+    - assets/images/Bar.png
 
   fonts:
     - family: Satoshi
@@ -41,6 +68,5 @@ flutter:
         - asset: assets/fonts/YoungSerif-Regular.ttf
           weight: 900
         
-
 
   

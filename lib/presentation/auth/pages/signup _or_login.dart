@@ -62,7 +62,7 @@ class WelcomeScreen extends StatelessWidget {
               width: 150,
               child: BasicAppBotton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
                 },
                 title: 'Log in',
                 

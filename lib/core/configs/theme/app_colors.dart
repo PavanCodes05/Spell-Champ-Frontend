@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class AppColors {
  
    static const primary = Color(0xFF4D4BB5);
-   static const background = Color.fromARGB(255, 224, 199, 237);
+   static const background = Color(0xffC7C6E5);
    static const white = Color(0xFFD9D9D9);
    static const loginletter = Color(0xFF252458);
    static const lightblack = Color(0xFF000000);
