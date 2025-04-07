@@ -41,7 +41,7 @@ flutter:
     - assets/images/grade_10.png
     - assets/images/grade_11.png
     - assets/images/grade_12.png
-    
+    - assets/images/spell-champ-logo.png    
 
   fonts:
     - family: Satoshi

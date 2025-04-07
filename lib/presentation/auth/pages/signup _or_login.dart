@@ -17,19 +17,14 @@ class WelcomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              height: 100,
-              width: 100,
+              height: 150,
+              width: 150,
               decoration: const BoxDecoration(
                 color: AppColors.white,
                 shape: BoxShape.circle,
               ),
-              child: const Center(
-                child: Text("Logo",
-                 style: TextStyle(
-                  fontSize: 18,
-                   fontWeight: FontWeight.bold
-                   )
-                   ),
+              child: Center(
+                child: Image.asset('assets/images/spell-champ-logo.png'),
               ),
             ),
             const SizedBox(height: 20),
@@ -63,7 +58,7 @@ class WelcomeScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
                 },
-                title: 'Log in',
+                title: 'Log in'
                 
               ),
             ),
