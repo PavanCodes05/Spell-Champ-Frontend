@@ -19,7 +19,7 @@ class AppTheme {
           
         ),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        elevation: 8, // Shadow elevation
+        elevation: 8, 
         
         shadowColor: Colors.black,
         

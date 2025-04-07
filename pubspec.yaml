@@ -29,6 +29,11 @@ flutter:
   uses-material-design: true
   assets:
     - assets/fonts/
+    - assets/images/book.png
+    - assets/images/bronze_trophy.png
+    - assets/images/dimond.png
+    - assets/images/exercise.png
+    - assets/images/gold_trophy.png
     - assets/images/grade_1.png
     - assets/images/grade_2.png
     - assets/images/grade_3.png
@@ -41,14 +46,12 @@ flutter:
     - assets/images/grade_10.png
     - assets/images/grade_11.png
     - assets/images/grade_12.png
-    
-
+    - assets/images/quiz_image.png
+    - assets/images/silver_trophy.png
+ 
   fonts:
     - family: Satoshi
       fonts:
         - asset: assets/fonts/YoungSerif-Regular.ttf
           weight: 900
-        
-
-
-  
+      
