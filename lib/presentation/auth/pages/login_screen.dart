@@ -3,8 +3,11 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_colors.dart';
+import 'package:spell_champ_frontend/presentation/home/pages/exercises.dart';
+import 'package:logger/logger.dart';
 
 final secureStorage = const FlutterSecureStorage();
+final logger = Logger();
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -66,6 +69,51 @@ class _LoginScreenState extends State<LoginScreen> {
       // Store in secure storage
       await secureStorage.write(key: "token", value: token);
       await secureStorage.write(key: "user", value: jsonEncode(user));
+
+      final userData = await secureStorage.read(key: "user");
+      final decodedUser = jsonDecode(userData!);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Login Successful")),
+      );
+
+      final grade = decodedUser["currentGrade"];
+      final exerciseInfo = await http.get(Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/grade/$grade/exercises"));
+
+      // logger.i("exerciseInfo: ${exerciseInfo.body}");
+
+      if (exerciseInfo.statusCode == 200 || exerciseInfo.statusCode == 201) {
+        final exerciseInfoJson = jsonDecode(exerciseInfo.body);
+        final exercises = exerciseInfoJson["data"];
+        // logger.i("exercises: $exercises");
+        await secureStorage.write(key: "exercises", value: jsonEncode(exercises));
+      }
+
+      final exercises = await secureStorage.read(key: "exercises");
+      final decodedExercises = jsonDecode(exercises!) as Map<String, dynamic>;
+
+      final properlyTyped = decodedExercises.map((key, value) {
+        return MapEntry(
+          key,
+          (value as List).map<Map<String, String>>((item) => Map<String, String>.from(item)).toList(),
+        );
+      });
+
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => ExercisesPage(exercises: properlyTyped),
+          transitionDuration: const Duration(milliseconds: 500),
+          transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
+            return SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(1, 0),
+                end: Offset.zero,
+              ).animate(animation),
+              child: child,
+            );
+          },
+        ),
+      );
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Login Successful")),

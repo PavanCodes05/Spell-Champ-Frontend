@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
+import 'package:spell_champ_frontend/presentation/home/pages/exercises.dart';
+import 'package:logger/logger.dart';
+
+final logger = Logger();
 
 void main() {
   runApp(const SpellChampApp());
@@ -14,7 +18,7 @@ class SpellChampApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: GradeSelectionScreen(userName: "Guest"),
+      home: const GradeSelectionScreen(userName: "Guest"),
     );
   }
 }
@@ -31,27 +35,123 @@ class GradeSelectionScreen extends StatefulWidget {
 class _GradeSelectionScreenState extends State<GradeSelectionScreen> with TickerProviderStateMixin {
   bool _isAnimating = false;
   int? _selectedGrade;
+  late final AnimationController _imageAnimationController;
   late final AnimationController _textAnimationController;
-  // ignore: unused_field
+  late final Animation<double> _imageScaleAnimation;
   late final Animation<double> _textScaleAnimation;
 
   @override
   void initState() {
     super.initState();
+    _imageAnimationController = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    );
+
     _textAnimationController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
     )..repeat(reverse: true);
-    _textScaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(CurvedAnimation(
-      parent: _textAnimationController,
-      curve: Curves.easeInOut,
-    ));
+
+    _imageScaleAnimation = Tween<double>(begin: 0.5, end: 2.0).animate(
+      CurvedAnimation(
+        parent: _imageAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+
+    _textScaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(
+        parent: _textAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
   }
 
   @override
   void dispose() {
+    _imageAnimationController.dispose();
     _textAnimationController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleGradeSelection(int grade) async {
+    setState(() {
+      _isAnimating = true;
+      _selectedGrade = grade;
+    });
+
+    _imageAnimationController.forward();
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    final secureStorage = const FlutterSecureStorage();
+    final token = await secureStorage.read(key: "token");
+
+    if (token == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Please login first")),
+        );
+      }
+      return;
+    }
+
+    try {
+      final response = await http.put(
+        Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/grade/update-grade"),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token"
+        },
+        body: jsonEncode({"grade": grade}),
+      );
+
+      if (response.statusCode == 200) {
+        await secureStorage.write(key: 'user', value: response.body);
+
+        final exerciseInfo = await http.get(
+          Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/grade/$grade/exercises"),
+        );
+
+        if (exerciseInfo.statusCode == 200 || exerciseInfo.statusCode == 201) {
+          final exercisesJson = jsonDecode(exerciseInfo.body);
+          final exercises = exercisesJson["data"];
+          await secureStorage.write(key: "exercises", value: jsonEncode(exercises));
+
+          final storedExercises = await secureStorage.read(key: "exercises");
+          final decodedExercises = jsonDecode(storedExercises!) as Map<String, dynamic>;
+
+          final properlyTyped = decodedExercises.map((key, value) {
+            return MapEntry(
+              key,
+              (value as List).map<Map<String, String>>((item) => Map<String, String>.from(item)).toList(),
+            );
+          });
+
+          if (context.mounted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (_) => ExercisesPage(exercises: properlyTyped),
+              ),
+            );
+          }
+        }
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error: ${response.body}")),
+          );
+        }
+      }
+    } catch (e) {
+      logger.e("Error during grade update: $e");
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("An error occurred.")),
+        );
+      }
+    }
   }
 
   @override
@@ -62,25 +162,20 @@ class _GradeSelectionScreenState extends State<GradeSelectionScreen> with Ticker
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    _selectedGrade == null ? "Select a grade" : "You chose grade $_selectedGrade!",
-                    style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                  ScaleTransition(
+                    scale: _textScaleAnimation,
+                    child: Text(
+                      _selectedGrade == null ? "Select a grade" : "You chose grade $_selectedGrade!",
+                      style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   ScaleTransition(
-                    scale: Tween<double>(begin: 0.5, end: 2.0).animate(
-                      CurvedAnimation(
-                        parent: AnimationController(
-                          duration: const Duration(milliseconds: 2000),
-                          vsync: this,
-                        )..forward(),
-                        curve: Curves.easeInOut,
-                      ),
-                    ),
+                    scale: _imageScaleAnimation,
                     child: _selectedGrade == null
-                        ? const Text("Select a grade")
+                        ? const SizedBox()
                         : Image.asset(
-                            'assets/images/grade_$_selectedGrade.png', // Dynamic Image
+                            'assets/images/grade_$_selectedGrade.png',
                             fit: BoxFit.contain,
                           ),
                   ),
@@ -120,49 +215,10 @@ class _GradeSelectionScreenState extends State<GradeSelectionScreen> with Ticker
                         ),
                         itemCount: 12,
                         itemBuilder: (context, index) {
-                          return GradeTile(grade: index + 1, onTap: () async {
-                            setState(() {
-                              _isAnimating = true;
-                              _selectedGrade = index + 1;
-                            });
-
-                            await Future.delayed(const Duration(milliseconds: 2000));
-
-                            setState(() {
-                              _isAnimating = false;
-                            });
-
-                            final storage = const FlutterSecureStorage();
-                            final token = await storage.read(key: "token");
-
-                            if (token == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Please login first")),
-                              );
-                              return;
-                            }
-
-                            final response = await http.put(
-                              Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/grade/update-grade"),
-                              headers: {
-                                "Content-Type": "application/json",
-                                "Authorization": "Bearer $token"
-                              },
-                              body: jsonEncode({
-                                "grade": index + 1,
-                              }),
-                            );
-
-                            if (response.statusCode == 200) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text("Grade updated successfully")),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Error: ${response.body}")),
-                              );
-                            }
-                          });
+                          return GradeTile(
+                            grade: index + 1,
+                            onTap: () => _handleGradeSelection(index + 1),
+                          );
                         },
                       ),
                     ),
@@ -185,10 +241,9 @@ class GradeTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Image.asset(
-        'assets/images/grade_$grade.png', // Dynamic Image
+        'assets/images/grade_$grade.png',
         fit: BoxFit.contain,
       ),
     );
   }
 }
-
