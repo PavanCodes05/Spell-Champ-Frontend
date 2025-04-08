@@ -15,7 +15,7 @@ class Wordspage extends StatefulWidget {
 
 class _WordspageState extends State<Wordspage> {
   int _diamondCount = 50;
-  int _currentIndex = 1;
+  
 
     
   final List<Map<String, String>> wordsList = [
@@ -45,11 +45,7 @@ class _WordspageState extends State<Wordspage> {
     setState(() {
     });
   }
-   void onTabTapped (int index) {
-    setState(() {
-      _currentIndex =index ;
-    });
-   }
+  
   
  @override
   Widget build(BuildContext context) {
