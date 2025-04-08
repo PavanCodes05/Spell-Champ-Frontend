@@ -18,6 +18,7 @@ dependencies:
   flutter_bloc: ^8.1.3
   fluttertoast: ^8.2.4
   logger: ^2.0.2
+  flutter_tts: ^4.2.2
 
 dev_dependencies:
   flutter_test:
@@ -43,6 +44,8 @@ flutter:
     - assets/images/grade_12.png
     - assets/images/spell-champ-logo.png   
     - assets/images/diamond.png 
+    - assets/images/next.png
+    - assets/images/volume.png
 
   fonts:
     - family: Satoshi

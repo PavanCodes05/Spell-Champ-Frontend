@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spell_champ_frontend/presentation/home/pages/word-slides.dart';
 
 class ExercisesPage extends StatelessWidget {
   final Map<String, List<Map<String, String>>> exercises;
@@ -44,7 +45,7 @@ class ExercisesPage extends StatelessWidget {
                           ],
                         ),
                         child: Center(
-                          child: Image.asset('assets/images/diamond.png')
+                          child: Image.asset('assets/images/diamond.png'),
                         ),
                       ),
                       Positioned(
@@ -78,27 +79,40 @@ class ExercisesPage extends StatelessWidget {
                 itemCount: exercises.keys.length,
                 itemBuilder: (context, index) {
                   final key = exercises.keys.elementAt(index);
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
-                    padding: const EdgeInsets.all(16.0),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(12.0),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 12.0,
-                          offset: Offset(4, 4),
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => WordSlides(
+                            exerciseNumber: index + 1,
+                            data: exercises[key]!,
+                          ),
                         ),
-                      ],
-                    ),
-                    child: Text(
-                      'Exercise: $key',
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                      );
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8.0),
+                      padding: const EdgeInsets.all(16.0),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12.0),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 12.0,
+                            offset: Offset(4, 4),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        'Exercise: $key',
+                        style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                   );
@@ -111,5 +125,4 @@ class ExercisesPage extends StatelessWidget {
     );
   }
 }
-
 
