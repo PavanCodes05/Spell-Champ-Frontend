@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:spell_champ_frontend/common/widgets/button/basic_app_button.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_colors.dart';
-import 'package:spell_champ_frontend/presentation/auth/pages/login_screen.dart';
-import 'package:spell_champ_frontend/presentation/auth/pages/signup_screen.dart';
+import 'package:spell_champ_frontend/presentation/pages/login_screen.dart';
+import 'package:spell_champ_frontend/presentation/pages/signup_screen.dart';
 
 
 

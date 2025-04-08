@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_colors.dart';
-import 'package:spell_champ_frontend/presentation/auth/pages/gradeselection.dart';
+import 'package:spell_champ_frontend/presentation/pages/gradeselection.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

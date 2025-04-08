@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:spell_champ_frontend/common/widgets/button/basic_app_button.dart';
-import 'package:spell_champ_frontend/presentation/auth/pages/gradeselection.dart';
+import 'package:spell_champ_frontend/presentation/pages/gradeselection.dart';
 
 void main() {
   runApp(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:spell_champ_frontend/common/widgets/button/diamond_badge.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_colors.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_theme.dart';
+import 'package:spell_champ_frontend/core/diamond_logic.dart';
 
 void main() {
   runApp(
@@ -22,12 +24,10 @@ class ProgressAchievementsScreen extends StatefulWidget {
 
 class _ProgressAchievementsScreenState
     extends State<ProgressAchievementsScreen> {
-  
   static const int totalGrades = 12;
   static const int exercisesPerGrade = 10;
   static const int totalExercises = totalGrades * exercisesPerGrade;
 
-  
   int goldCount = 0;
   int silverCount = 0;
   int bronzeCount = 0;
@@ -44,8 +44,7 @@ class _ProgressAchievementsScreenState
   }
 
   void loadProgressData() {
-    
-    onWordLearned(75); 
+    onWordLearned(75);
     for (int i = 0; i < 8; i++) {
       onExerciseCompleted();
     }
@@ -58,19 +57,19 @@ class _ProgressAchievementsScreenState
 
   void onWordLearned(int count) {
     wordsLearned += count;
-    diamonds += (count ~/ 5);
+    diamonds += DiamondUtils.calculateFromWords(count);
     updateProgress();
   }
 
   void onExerciseCompleted() {
     exercisesCompleted++;
-    diamonds += 5;
+    diamonds += DiamondUtils.calculateFromExercise();
     updateProgress();
   }
 
   void onQuizCompleted(int score) {
     quizzesCompleted++;
-    diamonds += 10;
+    diamonds += DiamondUtils.calculateFromQuiz();
 
     if (score >= 90) {
       goldCount++;
@@ -84,10 +83,8 @@ class _ProgressAchievementsScreenState
   }
 
   void updateProgress() {
-   
-    int totalActivities = totalExercises + totalExercises; 
+    int totalActivities = totalExercises * 2;
     int done = exercisesCompleted + quizzesCompleted;
-
     progressPercent = (done / totalActivities).clamp(0.0, 1.0);
     setState(() {});
   }
@@ -101,42 +98,48 @@ class _ProgressAchievementsScreenState
           child: Column(
             children: [
               const SizedBox(height: 75),
-              Container(
-                padding: const EdgeInsets.all(30),
-                decoration: BoxDecoration(
-                  color: AppColors.spellchamp,
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 30,
-                      backgroundColor: Colors.white,
-                      child: Icon(Icons.person,
-                          size: 40, color: Colors.deepPurple),
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(30),
+                    decoration: BoxDecoration(
+                      color: AppColors.spellchamp,
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                    const SizedBox(width: 30),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          "Sheetaal Gandhi",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Colors.white),
+                    child: Row(
+                      children: [
+                        const CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.white,
+                          child: Icon(Icons.person,
+                              size: 40, color: Colors.deepPurple),
                         ),
-                        Text(
-                          "Grade - 7",
-                          style: TextStyle(fontSize: 16, color: Colors.white),
-                        ),
+                        const SizedBox(width: 30),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text(
+                              "Sheetaal Gandhi",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.white),
+                            ),
+                            Text(
+                              "Grade - 7",
+                              style:
+                                  TextStyle(fontSize: 16, color: Colors.white),
+                            ),
+                          ],
+                        )
                       ],
-                    )
-                  ],
-                ),
+                    ),
+                  ),
+                  DiamondBadge(diamondCount: diamonds),
+                ],
               ),
               const SizedBox(height: 40),
-
               Column(
                 children: [
                   Text(
@@ -151,27 +154,22 @@ class _ProgressAchievementsScreenState
                     divisions: 100,
                     label: "${(progressPercent * 100).toInt()}%",
                     activeColor: AppColors.primary,
-                   
                   ),
                 ],
               ),
               const SizedBox(height: 40),
-
-              
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _buildTrophyStat(
                       "assets/images/gold_trophy.png", "$goldCount Gold"),
-                  _buildTrophyStat(
-                      "assets/images/silver_trophy.png", "$silverCount Silver"),
-                  _buildTrophyStat(
-                      "assets/images/bronze_trophy.png", "$bronzeCount Bronze"),
+                  _buildTrophyStat("assets/images/silver_trophy.png",
+                      "$silverCount Silver"),
+                  _buildTrophyStat("assets/images/bronze_trophy.png",
+                      "$bronzeCount Bronze"),
                 ],
               ),
               const SizedBox(height: 50),
-
-              
               Wrap(
                 alignment: WrapAlignment.center,
                 spacing: 16,
@@ -210,8 +208,25 @@ class _ProgressAchievementsScreenState
     return Column(
       children: [
         Image.asset(imagePath, width: 100, height: 100),
-        const SizedBox(height: 4),
-        Text(label, textAlign: TextAlign.center),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20), 
+            boxShadow: const [
+              BoxShadow(
+                  color: Colors.black26, blurRadius: 4, offset: Offset(1, 2))
+            ],
+          ),
+          child: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
       ],
     );
   }
