@@ -9,7 +9,7 @@ android {
     namespace = "com.example.spell_champ_frontend"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
-     ndkVersion = "27.0.12077973"
+     ndkVersion = "28.0.13004108"	
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
