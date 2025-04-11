@@ -46,7 +46,11 @@ flutter:
     - assets/images/grade_10.png
     - assets/images/grade_11.png
     - assets/images/grade_12.png
+    - assets/images/note_pen.png
+    - assets/images/pigy.png
     - assets/images/quiz_image.png
+    - assets/images/quizgirl_1.png
+    - assets/images/quizgirl_2.png
     - assets/images/silver_trophy.png
  
   fonts:

@@ -190,17 +190,7 @@ class _ProgressAchievementsScreenState
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        backgroundColor: Colors.deepPurple.shade100,
-        selectedItemColor: Colors.deepPurple,
-        unselectedItemColor: Colors.black,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.emoji_events), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: ''),
-        ],
-      ),
+
     );
   }
 

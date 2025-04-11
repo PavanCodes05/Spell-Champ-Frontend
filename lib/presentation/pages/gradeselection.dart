@@ -29,7 +29,7 @@ class GradeSelectionScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Greeting Text
+              
               Text.rich(
                 TextSpan(
                   children: [
@@ -62,7 +62,7 @@ class GradeSelectionScreen extends StatelessWidget {
               ),
               SizedBox(height: 16),
 
-              // Button
+              
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.purple[300],
@@ -79,11 +79,11 @@ class GradeSelectionScreen extends StatelessWidget {
               ),
               SizedBox(height: 16),
 
-              // Grid of Grades
+              
               Expanded(
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, // Two columns
+                    crossAxisCount: 2,
                     crossAxisSpacing: 12,
                     mainAxisSpacing: 12,
                   ),
@@ -101,7 +101,7 @@ class GradeSelectionScreen extends StatelessWidget {
   }
 }
 
-// Grade Tile with No Borders
+
 class GradeTile extends StatelessWidget {
   final int grade;
 
@@ -110,7 +110,7 @@ class GradeTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      'assets/images/grade_$grade.png', // Dynamic Image
+      'assets/images/grade_$grade.png',
       fit: BoxFit.contain,
     );
   }
