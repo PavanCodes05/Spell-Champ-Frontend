@@ -7,15 +7,19 @@ void main() {
   ));
 }
 
+
+    
 class Wordspage extends StatefulWidget {
   const Wordspage ({super.key});
   @override
+ 
   _WordspageState createState() => _WordspageState();
 }
 
 class _WordspageState extends State<Wordspage> {
   int _diamondCount = 50;
-  
+
+
 
     
   final List<Map<String, String>> wordsList = [
