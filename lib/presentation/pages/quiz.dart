@@ -2,15 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:spell_champ_frontend/common/widgets/button/diamond_badge.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_theme.dart';
 
-void main(){
-runApp(
-  MaterialApp(
-    home: const QuizScreen(),
-    theme: AppTheme.lightTheme,
-    debugShowCheckedModeBanner: false,
+import 'package:spell_champ_frontend/core/diamond_progress_manager.dart';
 
-  ),
- );
+
+void main() {
+  runApp(
+    MaterialApp(
+      home: const QuizScreen(),
+      theme: AppTheme.lightTheme,
+      debugShowCheckedModeBanner: false,
+    ),
+  );
 }
 
 class QuizScreen extends StatefulWidget {
@@ -21,21 +23,27 @@ class QuizScreen extends StatefulWidget {
 }
 
 class _QuizScreenState extends State<QuizScreen> {
+  final DiamondProgressManager manager = DiamondProgressManager();
+
+  @override
+  void initState() {
+    super.initState();
+    manager.loadSampleData();
+    setState(() {});
+  }
+
 
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       body: Stack(
         children: [
-          const DiamondBadge(
-            
-            diamondCount: 50,
+          DiamondBadge(
+            diamondCount: manager.diamonds,
             top: 50,
             right: 30,
           ),
-
           Center(
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 5),
@@ -87,7 +95,6 @@ class _QuizScreenState extends State<QuizScreen> {
                       width: 120,
                     ),
                   ),
-                  
                   Positioned(
                     bottom: -120,
                     left: -100,
@@ -110,11 +117,6 @@ class _QuizScreenState extends State<QuizScreen> {
           ),
         ],
       ),
- 
     );
   }
 }
-  
-
-      
-    

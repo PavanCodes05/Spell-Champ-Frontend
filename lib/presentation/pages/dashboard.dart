@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:spell_champ_frontend/common/widgets/button/diamond_badge.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_colors.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_theme.dart';
-import 'package:spell_champ_frontend/core/diamond_logic.dart';
+import 'package:spell_champ_frontend/core/diamond_progress_manager.dart';
+
 
 void main() {
   runApp(
@@ -22,70 +23,13 @@ class ProgressAchievementsScreen extends StatefulWidget {
       _ProgressAchievementsScreenState();
 }
 
-class _ProgressAchievementsScreenState
-    extends State<ProgressAchievementsScreen> {
-  static const int totalGrades = 12;
-  static const int exercisesPerGrade = 10;
-  static const int totalExercises = totalGrades * exercisesPerGrade;
-
-  int goldCount = 0;
-  int silverCount = 0;
-  int bronzeCount = 0;
-  int wordsLearned = 0;
-  int diamonds = 0;
-  int exercisesCompleted = 0;
-  int quizzesCompleted = 0;
-  double progressPercent = 0.0;
+class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen> {
+  final DiamondProgressManager manager = DiamondProgressManager();
 
   @override
   void initState() {
     super.initState();
-    loadProgressData();
-  }
-
-  void loadProgressData() {
-    onWordLearned(75);
-    for (int i = 0; i < 8; i++) {
-      onExerciseCompleted();
-    }
-    onQuizCompleted(95); // Gold
-    onQuizCompleted(75); // Silver
-    onQuizCompleted(60); // Bronze
-    onQuizCompleted(85); // Silver
-    onQuizCompleted(45); // Bronze
-  }
-
-  void onWordLearned(int count) {
-    wordsLearned += count;
-    diamonds += DiamondUtils.calculateFromWords(count);
-    updateProgress();
-  }
-
-  void onExerciseCompleted() {
-    exercisesCompleted++;
-    diamonds += DiamondUtils.calculateFromExercise();
-    updateProgress();
-  }
-
-  void onQuizCompleted(int score) {
-    quizzesCompleted++;
-    diamonds += DiamondUtils.calculateFromQuiz();
-
-    if (score >= 90) {
-      goldCount++;
-    } else if (score >= 70) {
-      silverCount++;
-    } else {
-      bronzeCount++;
-    }
-
-    updateProgress();
-  }
-
-  void updateProgress() {
-    int totalActivities = totalExercises * 2;
-    int done = exercisesCompleted + quizzesCompleted;
-    progressPercent = (done / totalActivities).clamp(0.0, 1.0);
+    manager.loadSampleData();
     setState(() {});
   }
 
@@ -136,23 +80,23 @@ class _ProgressAchievementsScreenState
                       ],
                     ),
                   ),
-                  DiamondBadge(diamondCount: diamonds),
+                  DiamondBadge(diamondCount: manager.diamonds),
                 ],
               ),
               const SizedBox(height: 40),
               Column(
                 children: [
                   Text(
-                    "${(progressPercent * 100).toInt()}%",
+                    "${(manager.progressPercent * 100).toInt()}%",
                     style: const TextStyle(
                         fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   Slider(
-                    value: progressPercent,
+                    value: manager.progressPercent,
                     onChanged: (_) {},
                     max: 1,
                     divisions: 100,
-                    label: "${(progressPercent * 100).toInt()}%",
+                    label: "${(manager.progressPercent * 100).toInt()}%",
                     activeColor: AppColors.primary,
                   ),
                 ],
@@ -161,12 +105,9 @@ class _ProgressAchievementsScreenState
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildTrophyStat(
-                      "assets/images/gold_trophy.png", "$goldCount Gold"),
-                  _buildTrophyStat("assets/images/silver_trophy.png",
-                      "$silverCount Silver"),
-                  _buildTrophyStat("assets/images/bronze_trophy.png",
-                      "$bronzeCount Bronze"),
+                  _buildTrophyStat("assets/images/gold_trophy.png", "${manager.goldCount} Gold"),
+                  _buildTrophyStat("assets/images/silver_trophy.png", "${manager.silverCount} Silver"),
+                  _buildTrophyStat("assets/images/bronze_trophy.png", "${manager.bronzeCount} Bronze"),
                 ],
               ),
               const SizedBox(height: 50),
@@ -175,14 +116,10 @@ class _ProgressAchievementsScreenState
                 spacing: 16,
                 runSpacing: 16,
                 children: [
-                  _buildStatCard("assets/images/book.png",
-                      "$wordsLearned\nNo of words learnt"),
-                  _buildStatCard("assets/images/dimond.png",
-                      "$diamonds\nTotal diamonds"),
-                  _buildStatCard("assets/images/exercise.png",
-                      "$exercisesCompleted\nExercises complete"),
-                  _buildStatCard("assets/images/quiz_image.png",
-                      "$quizzesCompleted\nCompleted quiz"),
+                  _buildStatCard("assets/images/book.png", "${manager.wordsLearned}\nNo of words learnt"),
+                  _buildStatCard("assets/images/dimond.png", "${manager.diamonds}\nTotal diamonds"),
+                  _buildStatCard("assets/images/exercise.png", "${manager.exercisesCompleted}\nExercises complete"),
+                  _buildStatCard("assets/images/quiz_image.png", "${manager.quizzesCompleted}\nCompleted quiz"),
                 ],
               ),
               const SizedBox(height: 30),
@@ -190,7 +127,6 @@ class _ProgressAchievementsScreenState
           ),
         ),
       ),
-
     );
   }
 
@@ -203,18 +139,14 @@ class _ProgressAchievementsScreenState
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20), 
+            borderRadius: BorderRadius.circular(20),
             boxShadow: const [
-              BoxShadow(
-                  color: Colors.black26, blurRadius: 4, offset: Offset(1, 2))
+              BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(1, 2))
             ],
           ),
           child: Text(
             label,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-            ),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
       ],
@@ -230,17 +162,14 @@ class _ProgressAchievementsScreenState
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.black, width: 1),
         boxShadow: const [
-          BoxShadow(
-              color: Colors.black26, blurRadius: 6, offset: Offset(2, 4))
+          BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(2, 4))
         ],
       ),
       child: Column(
         children: [
           Image.asset(imagePath, width: 40, height: 40),
           const SizedBox(height: 8),
-          Text(label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 14)),
+          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14)),
         ],
       ),
     );
