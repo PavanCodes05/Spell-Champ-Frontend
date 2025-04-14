@@ -46,6 +46,26 @@ flutter:
     - assets/images/diamond.png 
     - assets/images/next.png
     - assets/images/volume.png
+    - assets/images/home.png
+    - assets/images/clipboard.png
+    - assets/images/notification.png
+    - assets/images/Test Account.png
+    - assets/images/quiz-image1.png
+    - assets/images/quiz-image2.png
+    - assets/images/quiz-image3.png
+    - assets/images/quiz-image4.png
+    - assets/images/quiz-image5.png
+    - assets/images/result-image.png
+    - assets/images/tick.png
+    - assets/images/trophy 1.png
+    - assets/images/trophy 2.png
+    - assets/images/trophy 3.png
+    - assets/images/diamond.png
+    - assets/images/exercise.png
+    - assets/images/quiz-font.png
+    - assets/images/result-font.png
+    - assets/images/quiz.png
+    - assets/images/result.png
 
   fonts:
     - family: Satoshi
