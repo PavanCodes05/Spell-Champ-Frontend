@@ -17,19 +17,18 @@ class Wordspage extends StatefulWidget {
 }
 
 class _WordspageState extends State<Wordspage> {
-  int _diamondCount = 50;
 
-
-
-    
   final List<Map<String, String>> wordsList = [
-    {"word": "Apple", "icon": "assets/images/apple.png"},
-    {"word": "Banana", "icon": "assets/images/banana.png"},
-    {"word": "Orange", "icon": "assets/images/orange.png"},
-    {"word": "Strawberry", "icon": "assets/images/strawberry.png"},
-    {"word": "Pineapple", "icon": "assets/images/pineapple.png"},
-    {"word": "Jackfruit", "icon": "assets/images/jackfruit.png"},
-    {"word": "Watermelon", "icon": "assets/images/watermelon.png"},
+        { "word": "Apple", "picture": "https://res.cloudinary.com/dui1qqiue/image/upload/f_auto,q_auto/Apple" },
+        { "word": "Banana", "picture": "https://res.cloudinary.com/dui1qqiue/image/upload/f_auto,q_auto/ni0r3okslghmpmotsjh4" },
+        { "word": "Cat", "picture": "https://res.cloudinary.com/dui1qqiue/image/upload/f_auto,q_auto/ru8svekcaclh4j9dbjpd" },
+        { "word": "Dog", "picture": "https://res.cloudinary.com/dui1qqiue/image/upload/f_auto,q_auto/enxlxjpyukkgmf56p6dw" },
+        { "word": "Elephant", "picture": "https://res.cloudinary.com/dui1qqiue/image/upload/f_auto,q_auto/l252jor08wom4icgyfiu" },
+        { "word": "Fish", "picture": "https://res.cloudinary.com/dui1qqiue/image/upload/f_auto,q_auto/nuufegazvolob7o5jhov" },
+        { "word": "Grapes", "picture": "https://res.cloudinary.com/dui1qqiue/image/upload/f_auto,q_auto/oxz6veggr0m4qzxkl4d9" },
+        { "word": "House", "picture": "https://res.cloudinary.com/dui1qqiue/image/upload/f_auto,q_auto/syi3qjy03j6sujatzeok" },
+        { "word": "Ice", "picture": "https://res.cloudinary.com/dui1qqiue/image/upload/f_auto,q_auto/szqeg4una1xc0cjzu6uy" },
+        { "word": "Jug", "picture": "https://res.cloudinary.com/dui1qqiue/image/upload/f_auto,q_auto/l3vigddv7oaomwmzov4c" }
   ];
 
   final List<Widget> pages = [
@@ -39,16 +38,6 @@ class _WordspageState extends State<Wordspage> {
     Center(child: Text("Profile Page")),
   ];
 
-  void increaseDiamond() {
-    setState(() {
-      _diamondCount++;
-    });
-  }
-
-  void increaseNotification() {
-    setState(() {
-    });
-  }
   
   
  @override
@@ -92,8 +81,8 @@ class _WordspageState extends State<Wordspage> {
                         ),
                         ),
                         Padding(padding:const EdgeInsets.only(left: 8.0),
-                        child: Image.asset(
-                          wordsList[index]['icon']!,
+                        child: Image.network(
+                          wordsList[index]['picture']!,
                        height: 40,),
                         ),
                       ],
@@ -105,42 +94,9 @@ class _WordspageState extends State<Wordspage> {
           ],
         ),
       ),
-       Positioned(
-            top: 40,
-            right: 20,
-            child: Stack(
-              alignment: Alignment.topRight,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(2),
-                 
-                  child: Image.asset(
-                    'assets/vectors/diamond.png',
-                    width: 41,
-                    height: 46,
-                  ),
-                ),
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: CircleAvatar(
-                    radius: 10,
-                    backgroundColor: Colors.black,
-                    child: Text(
-                      "$_diamondCount",
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      ],
+    ),
      );
   }
 }
+
