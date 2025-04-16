@@ -46,6 +46,7 @@ flutter:
     - assets/images/diamond.png 
     - assets/images/next.png
     - assets/images/volume.png
+    - assets/images/person.png
 
   fonts:
     - family: Satoshi
