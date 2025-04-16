@@ -62,7 +62,7 @@ You have gained 10+ more diamonds''',
           children: [
             Row(
               children: [
-                Image.asset('assets/vectors/person.png', width: 50, height: 50),
+                Image.asset('assets/images/person.png', width: 50, height: 50),
                 const SizedBox(width: 10),
                 const Text(
                   'Sheetaal Gandhi',
@@ -74,7 +74,7 @@ You have gained 10+ more diamonds''',
             Stack(
               alignment: Alignment.topRight,
               children: [
-                Image.asset('assets/vectors/diamond.png', width: 41, height: 46),
+                Image.asset('assets/images/diamond.png', width: 41, height: 46),
                 Positioned(
                   right: 0,
                   top: 0,
