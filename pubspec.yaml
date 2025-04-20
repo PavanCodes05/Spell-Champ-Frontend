@@ -30,6 +30,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/fonts/
+    - assets/images/apple.png
     - assets/images/grade_1.png
     - assets/images/grade_2.png
     - assets/images/grade_3.png

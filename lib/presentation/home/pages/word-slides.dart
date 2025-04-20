@@ -18,6 +18,7 @@ class WordSlides extends StatefulWidget {
 class _WordSlidesState extends State<WordSlides> with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   final FlutterTts _flutterTts = FlutterTts();
+  final TextEditingController _controller = TextEditingController();
   late AnimationController _animationController;
   late Animation<Offset> _offsetAnimation;
   late Animation<double> _opacityAnimation;
@@ -47,6 +48,7 @@ class _WordSlidesState extends State<WordSlides> with SingleTickerProviderStateM
 
   @override
   void dispose() {
+    _controller.dispose();
     _animationController.dispose();
     _flutterTts.stop();
     super.dispose();
@@ -57,6 +59,7 @@ class _WordSlidesState extends State<WordSlides> with SingleTickerProviderStateM
       if (_currentIndex < widget.data.length - 1) {
         if (_isImageReady) {
           _currentIndex++;
+          _controller.clear();
           _animationController.forward(from: 0.0);
         }
       } else {
@@ -74,6 +77,9 @@ class _WordSlidesState extends State<WordSlides> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    String currentWord = widget.data[_currentIndex]['word']!.toUpperCase();
+    String userInput = _controller.text.toUpperCase();
+
     return Scaffold(
       body: Center(
         child: Column(
@@ -113,10 +119,69 @@ class _WordSlidesState extends State<WordSlides> with SingleTickerProviderStateM
                 : const SizedBox.shrink(),
             const SizedBox(height: 20),
             Text(
-              widget.data[_currentIndex]['word']!.toUpperCase(),
+              currentWord,
               style: const TextStyle(fontSize: 44, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
+
+         
+            GestureDetector(
+              onTap: () {
+              
+                FocusScope.of(context).requestFocus(FocusNode());
+              },
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(currentWord.length, (index) {
+                      return Container(
+                        width: 40,
+                        margin: const EdgeInsets.symmetric(horizontal: 6),
+                        child: Column(
+                          children: [
+                            Text(
+                              index < userInput.length ? userInput[index] : '',
+                              style: const TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Container(
+                              height: 10,
+                              color: Colors.black54,
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
+                  ),
+                 
+                  Opacity(
+                    opacity: 0,
+                    child: TextField(
+                      controller: _controller,
+                      maxLength: currentWord.length,
+                      autofocus: true,
+                      keyboardType: TextInputType.text,
+                      onChanged: (value) {
+                        setState(() {
+                          _controller.value = _controller.value.copyWith(
+                            text: value.toUpperCase(),
+                            selection: TextSelection.collapsed(offset: value.length),
+                          );
+                        });
+                      },
+                    ),
+                  )
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
