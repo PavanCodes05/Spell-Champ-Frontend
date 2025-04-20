@@ -66,6 +66,12 @@ flutter:
     - assets/images/result-font.png
     - assets/images/quiz.png
     - assets/images/result.png
+    - assets/images/banana.png
+    - assets/images/orange.png
+    - assets/images/apple.png
+    - assets/images/strawberry.png
+    - assets/images/number2.png
+
   fonts:
     - family: Satoshi
       fonts:
