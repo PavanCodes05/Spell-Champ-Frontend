@@ -1,0 +1,84 @@
+import 'package:flutter/material.dart';
+import 'missingWords.dart';
+import 'pickImage.dart';
+
+class QuizSlidesPage extends StatefulWidget {
+  final List<Map<String, dynamic>> quizList;
+
+  const QuizSlidesPage({super.key, required this.quizList});
+
+  @override
+  State<QuizSlidesPage> createState() => _QuizSlidesPageState();
+}
+
+class _QuizSlidesPageState extends State<QuizSlidesPage> {
+  final PageController _pageController = PageController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PageView.builder(
+        controller: _pageController,
+        itemCount: widget.quizList.length,
+        itemBuilder: (context, index) {
+          final quiz = widget.quizList[index];
+          final type = quiz['type'];
+
+          Widget child;
+
+          switch (type) {
+            case 'fill-in':
+              child = MissingWordsPage(data: quiz, onNext: _nextPage);
+              break;
+            case 'image-choice':
+              child = PickImagePage(data: quiz, onNext: _nextPage);
+              break;
+            default:
+              child = Center(child: Text("Unsupported quiz type"));
+          }
+
+          return Stack(
+            children: [
+              child,
+              Positioned(
+                top: 16,
+                left: 16,
+                child: CircleAvatar(
+                  backgroundColor: Colors.black,
+                  child: Text(
+                    '${index + 1}',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 22,
+                left: 22,
+                child: Text(
+                  '${index + 1}',
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  void _nextPage() {
+    if (_pageController.page!.toInt() < widget.quizList.length - 1) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    } else {
+      Navigator.pop(context); // Quiz done
+    }
+  }
+}
+
