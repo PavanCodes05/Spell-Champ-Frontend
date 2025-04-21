@@ -61,11 +61,11 @@ flutter:
     - assets/images/trophy 2.png
     - assets/images/trophy 3.png
     - assets/images/diamond.png
-    - assets/images/exercise.png
-    - assets/images/quiz-font.png
-    - assets/images/result-font.png
-    - assets/images/quiz.png
-    - assets/images/result.png
+    - assets/images/account.png
+    - assets/images/exercise-image1.png
+    - assets/images/exercise-image2.png
+    - assets/images/exercise-image3.png
+    - assets/images/exercise-image4.png
 
   fonts:
     - family: Satoshi
