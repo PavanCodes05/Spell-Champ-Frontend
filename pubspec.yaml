@@ -66,12 +66,20 @@ flutter:
     - assets/images/result-font.png
     - assets/images/quiz.png
     - assets/images/result.png
+
     - assets/images/silver_trophy.png
     - assets/images/quiz_image.png
     - assets/images/gold_trophy.png
     - assets/images/exercises.png
     - assets/images/bronze_trophy.png
     - assets/images/book.png
+
+    - assets/images/banana.png
+    - assets/images/orange.png
+    - assets/images/apple.png
+    - assets/images/strawberry.png
+    - assets/images/number2.png
+
 
   fonts:
     - family: Satoshi
