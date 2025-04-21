@@ -11,7 +11,6 @@ class AppColors {
    static const inputBackground = Color(0xffD9D9D9);
    static const inputBorder = Colors.black54;
    static const spellchamp = Color(0xFF030249);
-   static const signupbackground = Color.fromARGB(255, 118, 83, 195);
-  
+   static const signupbackground = Color.fromARGB(255, 118, 83, 195);  
 }
 

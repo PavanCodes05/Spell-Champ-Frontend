@@ -13,14 +13,25 @@ class QuizSlidesPage extends StatefulWidget {
 
 class _QuizSlidesPageState extends State<QuizSlidesPage> {
   final PageController _pageController = PageController();
+  int _correctAnswers = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView.builder(
         controller: _pageController,
-        itemCount: widget.quizList.length,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: widget.quizList.length + 1,
         itemBuilder: (context, index) {
+          if (index == widget.quizList.length) {
+            return Center(
+              child: Text(
+                'Correct answers: $_correctAnswers/${widget.quizList.length}',
+                style: const TextStyle(fontSize: 32),
+              ),
+            );
+          }
+
           final quiz = widget.quizList[index];
           final type = quiz['type'];
 
@@ -28,10 +39,30 @@ class _QuizSlidesPageState extends State<QuizSlidesPage> {
 
           switch (type) {
             case 'fill-in':
-              child = MissingWordsPage(data: quiz, onNext: _nextPage);
+              child = MissingWordsPage(
+                data: quiz,
+                onNext: (isCorrect) {
+                  if (isCorrect) {
+                    setState(() {
+                      _correctAnswers++;
+                    });
+                  }
+                  _nextPage();
+                },
+              );
               break;
             case 'image-choice':
-              child = PickImagePage(data: quiz, onNext: _nextPage);
+              child = PickImagePage(
+                data: quiz,
+                onNext: (isCorrect) {
+                  if (isCorrect) {
+                    setState(() {
+                      _correctAnswers++;
+                    });
+                  }
+                  _nextPage();
+                },
+              );
               break;
             default:
               child = Center(child: Text("Unsupported quiz type"));
@@ -71,7 +102,7 @@ class _QuizSlidesPageState extends State<QuizSlidesPage> {
   }
 
   void _nextPage() {
-    if (_pageController.page!.toInt() < widget.quizList.length - 1) {
+    if (_pageController.page!.toInt() < widget.quizList.length) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
