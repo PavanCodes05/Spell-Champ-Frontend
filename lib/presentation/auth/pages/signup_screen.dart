@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
@@ -186,6 +187,11 @@ class SignupScreenState extends State<SignupScreen> {
           // Store in secure storage
           await _secureStorage.write(key: "token", value: token);
           await _secureStorage.write(key: "user", value: jsonEncode(user));
+          
+          // print the user details
+          if (kDebugMode) {
+            print("User written: ${jsonEncode(user)}");
+          }
 
           Fluttertoast.showToast(msg: "Signup Successful");
 

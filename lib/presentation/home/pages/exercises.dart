@@ -80,7 +80,11 @@ class ExercisesPage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final key = exercises.keys.elementAt(index);
                   return GestureDetector(
-                    onTap: () {
+                    onTap: () async {
+                      await precacheImage(
+                        AssetImage('assets/images/exercise-image.png'),
+                        context,
+                      );
                       Navigator.push(
                         context,
                         MaterialPageRoute(

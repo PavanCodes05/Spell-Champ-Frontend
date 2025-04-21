@@ -1,8 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'dart:convert';
-import 'package:spell_champ_frontend/presentation/home/pages/exercises.dart';
+import 'package:spell_champ_frontend/presentation/home/pages/home.dart';
 import 'package:logger/logger.dart';
 
 final logger = Logger();
@@ -12,7 +12,7 @@ void main() {
 }
 
 class SpellChampApp extends StatelessWidget {
-  const SpellChampApp({super.key});
+  const SpellChampApp({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class SpellChampApp extends StatelessWidget {
 class GradeSelectionScreen extends StatefulWidget {
   final String userName;
 
-  const GradeSelectionScreen({super.key, required this.userName});
+  const GradeSelectionScreen({Key? key, required this.userName});
 
   @override
   State<GradeSelectionScreen> createState() => _GradeSelectionScreenState();
@@ -113,26 +113,25 @@ class _GradeSelectionScreenState extends State<GradeSelectionScreen> with Ticker
         final exerciseInfo = await http.get(
           Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/grade/$grade/exercises"),
         );
+        final quizInfo = await http.get(
+          Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/grade/$grade/quizzes"),
+        );
 
         if (exerciseInfo.statusCode == 200 || exerciseInfo.statusCode == 201) {
           final exercisesJson = jsonDecode(exerciseInfo.body);
           final exercises = exercisesJson["data"];
           await secureStorage.write(key: "exercises", value: jsonEncode(exercises));
 
-          final storedExercises = await secureStorage.read(key: "exercises");
-          final decodedExercises = jsonDecode(storedExercises!) as Map<String, dynamic>;
-
-          final properlyTyped = decodedExercises.map((key, value) {
-            return MapEntry(
-              key,
-              (value as List).map<Map<String, String>>((item) => Map<String, String>.from(item)).toList(),
-            );
-          });
+          if (quizInfo.statusCode == 200 || quizInfo.statusCode == 201) {
+            final quizzesJson = jsonDecode(quizInfo.body);
+            final quizzes = quizzesJson["data"];
+            await secureStorage.write(key: "quizzes", value: jsonEncode(quizzes));
+          }
 
           if (context.mounted) {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (_) => ExercisesPage(exercises: properlyTyped),
+                builder: (_) => ExerciseHomePage(),
               ),
             );
           }
@@ -234,7 +233,7 @@ class GradeTile extends StatelessWidget {
   final int grade;
   final VoidCallback onTap;
 
-  const GradeTile({super.key, required this.grade, required this.onTap});
+  const GradeTile({Key? key, required this.grade, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -247,3 +246,4 @@ class GradeTile extends StatelessWidget {
     );
   }
 }
+
