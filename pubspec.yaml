@@ -30,57 +30,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/fonts/
-    - assets/images/apple.png
-    - assets/images/grade_1.png
-    - assets/images/grade_2.png
-    - assets/images/grade_3.png
-    - assets/images/grade_4.png
-    - assets/images/grade_5.png
-    - assets/images/grade_6.png
-    - assets/images/grade_7.png
-    - assets/images/grade_8.png
-    - assets/images/grade_9.png
-    - assets/images/grade_10.png
-    - assets/images/grade_11.png
-    - assets/images/grade_12.png
-    - assets/images/spell-champ-logo.png   
-    - assets/images/diamond.png 
-    - assets/images/next.png
-    - assets/images/volume.png
-    - assets/images/home.png
-    - assets/images/clipboard.png
-    - assets/images/notification.png
-    - assets/images/Test Account.png
-    - assets/images/quiz-image1.png
-    - assets/images/quiz-image2.png
-    - assets/images/quiz-image3.png
-    - assets/images/quiz-image4.png
-    - assets/images/quiz-image5.png
-    - assets/images/result-image.png
-    - assets/images/tick.png
-    - assets/images/trophy 1.png
-    - assets/images/trophy 2.png
-    - assets/images/trophy 3.png
-    - assets/images/exercise.png
-    - assets/images/quiz-font.png
-    - assets/images/result-font.png
-    - assets/images/quiz.png
-    - assets/images/result.png
+    - assets/images/
 
-    - assets/images/silver_trophy.png
-    - assets/images/quiz_image.png
-    - assets/images/gold_trophy.png
-    - assets/images/exercises.png
-    - assets/images/bronze_trophy.png
-    - assets/images/book.png
-
-    - assets/images/banana.png
-    - assets/images/orange.png
-    - assets/images/apple.png
-    - assets/images/strawberry.png
-    - assets/images/number2.png
-
-
+  
   fonts:
     - family: Satoshi
       fonts:
