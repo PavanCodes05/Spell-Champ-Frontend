@@ -30,43 +30,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/fonts/
-    - assets/images/grade_1.png
-    - assets/images/grade_2.png
-    - assets/images/grade_3.png
-    - assets/images/grade_4.png
-    - assets/images/grade_5.png
-    - assets/images/grade_6.png
-    - assets/images/grade_7.png
-    - assets/images/grade_8.png
-    - assets/images/grade_9.png
-    - assets/images/grade_10.png
-    - assets/images/grade_11.png
-    - assets/images/grade_12.png
-    - assets/images/spell-champ-logo.png   
-    - assets/images/diamond.png 
-    - assets/images/next.png
-    - assets/images/volume.png
-    - assets/images/home.png
-    - assets/images/clipboard.png
-    - assets/images/notification.png
-    - assets/images/Test Account.png
-    - assets/images/quiz-image1.png
-    - assets/images/quiz-image2.png
-    - assets/images/quiz-image3.png
-    - assets/images/quiz-image4.png
-    - assets/images/quiz-image5.png
-    - assets/images/result-image.png
-    - assets/images/tick.png
-    - assets/images/trophy 1.png
-    - assets/images/trophy 2.png
-    - assets/images/trophy 3.png
-    - assets/images/diamond.png
-    - assets/images/account.png
-    - assets/images/exercise-image1.png
-    - assets/images/exercise-image2.png
-    - assets/images/exercise-image3.png
-    - assets/images/exercise-image4.png
+    - assets/images/
 
+  
   fonts:
     - family: Satoshi
       fonts:
