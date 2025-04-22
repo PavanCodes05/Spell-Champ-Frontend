@@ -164,8 +164,8 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
                       return Column(
                         children: [
                           CircleAvatar(
-                            backgroundColor: dailyDrill[index] ? Colors.green : Colors.white,
-                            radius: 20,
+                            radius: 25,
+                            backgroundImage: dailyDrill[index] ? const AssetImage("assets/images/tick.png") : null,
                           ),
                           const SizedBox(height: 5),
                           Text(
@@ -367,5 +367,8 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
     );
   }
 }
+
+
+
 
 
