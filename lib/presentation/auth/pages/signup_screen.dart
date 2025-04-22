@@ -1,36 +1,32 @@
+// lib/presentation/auth/pages/signup_screen.dart
+
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:spell_champ_frontend/common/widgets/button/basic_app_button.dart';
+import 'package:spell_champ_frontend/providers/progress_provider.dart';
 import 'package:spell_champ_frontend/presentation/auth/pages/gradeselection.dart';
 
-final _secureStorage = const FlutterSecureStorage();
-
-void main() {
-  runApp(
-    const MaterialApp(
-      home: SignupScreen(),
-      debugShowCheckedModeBanner: false,
-    ),
-  );
-}
+final _secureStorage = FlutterSecureStorage();
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
 
   @override
-  SignupScreenState createState() => SignupScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class SignupScreenState extends State<SignupScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
-
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final _nameController     = TextEditingController();
+  final _emailController    = TextEditingController();
+  final _passwordController = TextEditingController();
 
   bool _isLoading = false;
 
@@ -46,107 +42,61 @@ class SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40),
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "SPELL CHAMP",
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          "Signup",
-                          style: TextStyle(fontSize: 24, color: Colors.black),
-                        ),
-                        const SizedBox(height: 20),
-
-                        SizedBox(
-                          width: 300,
-                          height: 55,
-                          child: TextFormField(
-                            controller: _nameController,
-                            keyboardType: TextInputType.name,
-                            decoration: _buildInputDecoration(
-                                "Name", "Enter your Name"),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Please enter your name";
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-
-                        SizedBox(
-                          width: 300,
-                          height: 55,
-                          child: TextFormField(
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: _buildInputDecoration(
-                                "Email", "Enter your Email ID"),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Please enter email";
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-
-                        SizedBox(
-                          width: 300,
-                          height: 55,
-                          child: TextFormField(
-                            controller: _passwordController,
-                            keyboardType: TextInputType.visiblePassword,
-                            obscureText: true,
-                            decoration: _buildInputDecoration(
-                                "Password", "Enter your Password"),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return "Please enter your password";
-                              } else if (value.length < 6) {
-                                return "Password must contain at least 6 characters";
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          width: 150,
-                          child: SignupButton(
-                            onPressed: () async {
-                              setState(() {
-                                _isLoading = true;
-                              });
-                              await _handleSignup();
-                              setState(() {
-                                _isLoading = false;
-                              });
-                            },
-                            title: 'Sign Up',
-                          ),
-                        ),
-                      ],
+        child: _isLoading
+          ? const CircularProgressIndicator()
+          : SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      "SPELL CHAMP",
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.deepPurple,
+                      ),
                     ),
-                  ),
-          ),
-        ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      "Sign Up",
+                      style: TextStyle(fontSize: 24, color: Colors.black87),
+                    ),
+                    const SizedBox(height: 24),
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: _buildInputDecoration("Name", "Enter your name"),
+                      validator: (v) => (v == null || v.isEmpty) ? "Please enter your name" : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: _buildInputDecoration("Email", "Enter your email"),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (v) => (v == null || v.isEmpty) ? "Please enter your email" : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _passwordController,
+                      decoration: _buildInputDecoration("Password", "Enter your password"),
+                      obscureText: true,
+                      validator: (v) {
+                        if (v == null || v.isEmpty) return "Please enter a password";
+                        if (v.length < 6) return "Password must be at least 6 characters";
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    BasicAppBotton(
+                      title: "Sign Up",
+                      onPressed: _submitSignup,
+                    ),
+                  ],
+                ),
+              ),
+            ),
       ),
     );
   }
@@ -157,72 +107,59 @@ class SignupScreenState extends State<SignupScreen> {
       hintText: hint,
       filled: true,
       fillColor: Colors.white,
-      contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Colors.black),
+        borderRadius: BorderRadius.circular(8),
       ),
     );
   }
 
-  Future<void> _handleSignup() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        final response = await http.post(
-          Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/auth/signup"),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode({
-            "name": _nameController.text,
-            "email": _emailController.text,
-            "password": _passwordController.text,
-          }),
+  Future<void> _submitSignup() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await http.post(
+        Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/auth/signup"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "name":     _nameController.text.trim(),
+          "email":    _emailController.text.trim(),
+          "password": _passwordController.text,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body)["data"];
+        final token = data["token"] as String;
+
+        // 1️⃣ Clear any old progress for a clean start:
+        await _secureStorage.delete(key: "progress");
+
+        // 2️⃣ Store token & user
+        await _secureStorage.write(key: "token", value: token);
+        await _secureStorage.write(key: "user",  value: jsonEncode(data));
+
+        // 3️⃣ Load fresh progress from backend
+        await context.read<ProgressProvider>().loadFromBackend();
+
+        Fluttertoast.showToast(msg: "Signup successful!");
+
+        // 4️⃣ Navigate to grade selection
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => GradeSelectionScreen(userName: data["name"] as String),
+          ),
         );
-
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          final jsonResponse = jsonDecode(response.body);
-
-          final token = jsonResponse["data"]["token"];
-          final user = jsonResponse["data"];
-
-          // Store in secure storage
-          await _secureStorage.write(key: "token", value: token);
-          await _secureStorage.write(key: "user", value: jsonEncode(user));
-          
-          // print the user details
-          if (kDebugMode) {
-            print("User written: ${jsonEncode(user)}");
-          }
-
-          Fluttertoast.showToast(msg: "Signup Successful");
-
-          final userJson = await _secureStorage.read(key: "user");
-
-          final userData = jsonDecode(userJson!);
-          final String userName = userData["name"];
-
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (_, __, ___) => GradeSelectionScreen(userName: userName),
-              transitionDuration: const Duration(milliseconds: 500),
-              transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-                return SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(1, 0),
-                    end: Offset.zero,
-                  ).animate(animation),
-                  child: child,
-                );
-              },
-            ),
-          );
-        } else {
-          Fluttertoast.showToast(msg: "Signup Failed: ${response.body}");
-        }
-      } catch (e) {
-        Fluttertoast.showToast(msg: "An error occurred: $e");
+      } else {
+        Fluttertoast.showToast(msg: "Signup failed: ${response.body}");
       }
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Error: $e");
+      if (kDebugMode) debugPrint("Signup error: $e");
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 }
-

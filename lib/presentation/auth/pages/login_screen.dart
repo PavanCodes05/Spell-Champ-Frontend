@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (_, __, ___) => ExercisesPage(exercises: properlyTyped),
+          pageBuilder: (_, __, ___) => ExercisesPage(exercises: properlyTyped, grade: grade,),
           transitionDuration: const Duration(milliseconds: 500),
           transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
             return SlideTransition(

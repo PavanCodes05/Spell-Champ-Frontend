@@ -127,7 +127,7 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final progress = Provider.of<ProgressProvider>(context, listen: false);
+    final progress = Provider.of<ProgressProvider>(context, listen: true);
     return Scaffold(
       backgroundColor: const Color(0xFFD3CFE3),
       body: SafeArea(
