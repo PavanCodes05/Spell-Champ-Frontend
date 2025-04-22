@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_theme.dart';
 import 'package:spell_champ_frontend/presentation/auth/pages/signup%20_or_login.dart';
 import 'package:spell_champ_frontend/presentation/home/pages/home.dart';
-import 'package:spell_champ_frontend/presentation/home/pages/pickImage.dart';
-import 'package:spell_champ_frontend/presentation/home/pages/QuizzesPage.dart';
-import 'package:spell_champ_frontend/presentation/home/pages/missingWords.dart';
 
 void main() {
   runApp(const MainApp());
@@ -18,8 +16,17 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
-      home: const WelcomeScreen()    
-  );
+      home: FutureBuilder(
+        future: const FlutterSecureStorage().read(key: 'user'),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return const ExerciseHomePage();
+          } else {
+            return const WelcomeScreen();
+          }
+        },
+      ),
+    );
   }
 }
 
