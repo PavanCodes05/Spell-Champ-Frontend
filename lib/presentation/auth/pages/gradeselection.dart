@@ -127,14 +127,14 @@ class _GradeSelectionScreenState extends State<GradeSelectionScreen> with Ticker
             final quizzes = quizzesJson["data"];
             await secureStorage.write(key: "quizzes", value: jsonEncode(quizzes));
           }
+        }
 
-          if (context.mounted) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (_) => ExerciseHomePage(),
-              ),
-            );
-          }
+        if (context.mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => const ExerciseHomePage(),
+            ),
+          );
         }
       } else {
         if (context.mounted) {

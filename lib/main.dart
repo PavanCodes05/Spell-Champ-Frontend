@@ -2,10 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_theme.dart';
 import 'package:spell_champ_frontend/presentation/auth/pages/signup%20_or_login.dart';
+import 'package:provider/provider.dart';
 import 'package:spell_champ_frontend/presentation/home/pages/home.dart';
+import 'package:spell_champ_frontend/providers/progress_provider.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ProgressProvider()),
+      ],
+      child: const MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatelessWidget {

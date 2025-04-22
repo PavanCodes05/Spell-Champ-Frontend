@@ -2,9 +2,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 import 'package:spell_champ_frontend/presentation/home/pages/exercises.dart';
 import 'package:spell_champ_frontend/presentation/home/pages/QuizzesPage.dart';
 import 'package:spell_champ_frontend/presentation/home/pages/dashboard.dart';
+import 'package:spell_champ_frontend/providers/progress_provider.dart';
 
 class ExerciseHomePage extends StatefulWidget {
   const ExerciseHomePage({super.key});
@@ -16,6 +18,7 @@ class ExerciseHomePage extends StatefulWidget {
 class _ExerciseHomePageState extends State<ExerciseHomePage> {
   final secureStorage = const FlutterSecureStorage();
   String userName = "";
+  int grade = 1;
   Map<String, List<Map<String, String>>> allExercises = {};
   Map<String, List<Map<String, dynamic>>> allQuizzes = {};
   List<bool> dailyDrill = List.filled(6, false);
@@ -36,15 +39,18 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
         final userData = jsonDecode(userJson);
         setState(() {
           userName = userData["data"]["name"] ?? "User";
+          grade = userData["data"]["currentGrade"] ?? 1;
         });
       } else {
         setState(() {
           userName = "User";
+          grade = 1;
         });
       }
     } catch (e) {
       setState(() {
         userName = "User";
+        grade = 1;
       });
     }
   }
@@ -121,6 +127,7 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final progress = Provider.of<ProgressProvider>(context, listen: false);
     return Scaffold(
       backgroundColor: const Color(0xFFD3CFE3),
       body: SafeArea(
@@ -177,7 +184,7 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => ExercisesPage(exercises: allExercises)),
+                        MaterialPageRoute(builder: (_) => ExercisesPage(exercises: allExercises, grade: grade)),
                       );
                     },
                     child: _buildExerciseCard(),
@@ -194,7 +201,7 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
                 ],
               ),
             ),
-            _buildTopRightDiamond(),
+            _buildTopRightDiamond(progress.diamonds.toString()),
             _buildTopLeftProfile(),
           ],
         ),
@@ -202,7 +209,7 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
     );
   }
 
-  Widget _buildTopRightDiamond() {
+  Widget _buildTopRightDiamond(String diamonds) {
     return Positioned(
       top: 10,
       right: 10,
@@ -236,8 +243,8 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
                 color: Colors.black,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Text(
-                "50",
+              child: Text(
+                diamonds,
                 style: TextStyle(
                   color: Colors.white,
                   shadows: [BoxShadow(color: Colors.grey, blurRadius: 10)],
@@ -360,4 +367,5 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
     );
   }
 }
+
 

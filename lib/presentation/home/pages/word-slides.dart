@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:provider/provider.dart';
+import 'package:spell_champ_frontend/providers/progress_provider.dart';
 
 class WordSlides extends StatefulWidget {
   final int exerciseNumber;
   final List<Map<String, String>> data;
+  final int grade;
 
   const WordSlides({
     super.key,
     required this.exerciseNumber,
     required this.data,
+    required this.grade
   });
 
   @override
@@ -85,7 +89,9 @@ class _WordSlidesState extends State<WordSlides> with SingleTickerProviderStateM
           _isKeyboardOpen = false;
         }
       } else if (_controller.text.toUpperCase() == currentWord) {
-        Navigator.of(context).maybePop();
+        Provider.of<ProgressProvider>(context, listen: false).markExerciseCompleted("exercise${widget.grade}${widget.exerciseNumber}");
+        Navigator.pop(context);
+
       } else {
         _shakeAnimation = Tween<double>(
           begin: 0.0,
@@ -253,4 +259,6 @@ class _WordSlidesState extends State<WordSlides> with SingleTickerProviderStateM
     );
   }
 }
+
+
 

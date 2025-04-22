@@ -1,34 +1,62 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 import 'package:spell_champ_frontend/common/widgets/diamond_badge.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_colors.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:spell_champ_frontend/presentation/auth/pages/signup%20_or_login.dart';
+import 'package:spell_champ_frontend/presentation/auth/pages/gradeselection.dart';
+import 'package:spell_champ_frontend/providers/progress_provider.dart';
 
 class ProgressAchievementsScreen extends StatefulWidget {
   const ProgressAchievementsScreen({super.key});
 
   @override
-  _ProgressAchievementsScreenState createState() => _ProgressAchievementsScreenState();
+  State<ProgressAchievementsScreen> createState() => _ProgressAchievementsScreenState();
 }
 
 class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen> {
-  final secureStorage = const FlutterSecureStorage(); 
-  final double progressPercent = 0.7;
-  final int diamondCount = 50;
-  final int goldCount = 10;
-  final int silverCount = 5;
-  final int bronzeCount = 7;
-  final int exercisesCompleted = 7;
-  final int quizzesCompleted = 10;
+  final secureStorage = const FlutterSecureStorage();
+
+  late ProgressProvider progress;
+  bool _initialized = false;
+
   String userName = "User";
   int grade = 1;
+  int diamondCount = 0;
+  int goldCount = 0;
+  int silverCount = 0;
+  int bronzeCount = 0;
+  int exercisesCompleted = 0;
+  int quizzesCompleted = 0;
+  double progressPercent = 0.0;
 
   @override
   void initState() {
     super.initState();
     _retrieveUserInfo();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      progress = Provider.of<ProgressProvider>(context, listen: false);
+      _loadProgressValues();
+      _initialized = true;
+    }
+  }
+
+  void _loadProgressValues() {
+    setState(() {
+      diamondCount = progress.diamonds;
+      goldCount = progress.gold;
+      silverCount = progress.silver;
+      bronzeCount = progress.bronze;
+      exercisesCompleted = progress.exercisesCompleted;
+      quizzesCompleted = progress.quizzesCompleted;
+      progressPercent = ((exercisesCompleted + quizzesCompleted) / 20).clamp(0, 1).toDouble();
+    });
   }
 
   Future<void> _retrieveUserInfo() async {
@@ -40,13 +68,8 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
           userName = userData["data"]["name"] ?? "User";
           grade = userData["data"]["currentGrade"] ?? 1;
         });
-      } else {
-        setState(() {
-          userName = "User";
-          grade = 1;
-        });
       }
-    } catch (e) {
+    } catch (_) {
       setState(() {
         userName = "User";
         grade = 1;
@@ -68,18 +91,13 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
         actions: [
           TextButton(
             onPressed: () async {
-              final storage = const FlutterSecureStorage();
-              await storage.delete(key: "token");
-              await storage.delete(key: "userKey");
+              await secureStorage.deleteAll();
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (_) => const WelcomeScreen()),
               );
             },
-            child: const Text(
-              "Logout",
-              style: TextStyle(color: Colors.black),
-            ),
+            child: const Text("Logout", style: TextStyle(color: Colors.black)),
           ),
         ],
       ),
@@ -103,8 +121,7 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
                         const CircleAvatar(
                           radius: 30,
                           backgroundColor: Colors.white,
-                          child: Icon(Icons.person,
-                              size: 40, color: Colors.deepPurple),
+                          child: Icon(Icons.person, size: 40, color: Colors.deepPurple),
                         ),
                         const SizedBox(width: 30),
                         Column(
@@ -113,9 +130,10 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
                             Text(
                               userName,
                               style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                  color: Colors.white),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: Colors.white,
+                              ),
                             ),
                             Text(
                               "Grade $grade",
@@ -126,7 +144,7 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
                       ],
                     ),
                   ),
-                  const DiamondBadge(diamondCount: 50),
+                  DiamondBadge(diamondCount: diamondCount),
                 ],
               ),
               const SizedBox(height: 40),
@@ -134,8 +152,7 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
                 children: [
                   Text(
                     "${(progressPercent * 100).toInt()}%",
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   Slider(
                     value: progressPercent,
@@ -169,6 +186,28 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
                 ),
               ),
               const SizedBox(height: 30),
+              Center(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purple[300],
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => GradeSelectionScreen(userName: userName),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    "Change Grade",
+                    style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 30),
             ],
           ),
         ),
@@ -187,13 +226,10 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
             boxShadow: const [
-              BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(1, 2))
+              BoxShadow(color: Colors.black26, blurRadius: 4, offset: Offset(1, 2)),
             ],
           ),
-          child: Text(
-            label,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-          ),
+          child: Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
         ),
       ],
     );
@@ -208,7 +244,7 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.black, width: 1),
         boxShadow: const [
-          BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(2, 4))
+          BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(2, 4)),
         ],
       ),
       child: Column(
@@ -221,4 +257,3 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
     );
   }
 }
-

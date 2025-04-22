@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:spell_champ_frontend/presentation/home/pages/word-slides.dart';
+import 'package:spell_champ_frontend/providers/progress_provider.dart';
 
 class ExercisesPage extends StatelessWidget {
   final Map<String, List<Map<String, String>>> exercises;
-
-  const ExercisesPage({super.key, required this.exercises});
+  final dynamic grade;
+  
+  const ExercisesPage({super.key, required this.exercises, required this.grade});
 
   @override
   Widget build(BuildContext context) {
+    final progress = Provider.of<ProgressProvider>(context);
     return Scaffold(
       backgroundColor: Colors.purple[100],
       body: SafeArea(
@@ -57,8 +61,8 @@ class ExercisesPage extends StatelessWidget {
                             shape: BoxShape.circle,
                             color: Colors.black,
                           ),
-                          child: const Text(
-                            '10',
+                          child: Text(
+                            progress.diamonds.toString(),
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
@@ -91,6 +95,7 @@ class ExercisesPage extends StatelessWidget {
                           builder: (context) => WordSlides(
                             exerciseNumber: index + 1,
                             data: exercises[key]!,
+                            grade: grade,
                           ),
                         ),
                       );
@@ -129,4 +134,3 @@ class ExercisesPage extends StatelessWidget {
     );
   }
 }
-
