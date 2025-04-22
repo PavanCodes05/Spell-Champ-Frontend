@@ -1,39 +1,94 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:spell_champ_frontend/common/widgets/diamond_badge.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_colors.dart';
-import 'package:spell_champ_frontend/core/configs/theme/app_theme.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:spell_champ_frontend/presentation/auth/pages/signup%20_or_login.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
-      home: ProgressAchievementsScreen(),
-      theme: AppTheme.lightTheme,
-      debugShowCheckedModeBanner: false,
-    ),
-  );
-}
-
-class ProgressAchievementsScreen extends StatelessWidget {
+class ProgressAchievementsScreen extends StatefulWidget {
   const ProgressAchievementsScreen({super.key});
 
+  @override
+  _ProgressAchievementsScreenState createState() => _ProgressAchievementsScreenState();
+}
+
+class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen> {
+  final secureStorage = const FlutterSecureStorage(); 
+  final double progressPercent = 0.7;
   final int diamondCount = 50;
-  final double progressPercent = 0.5;
   final int goldCount = 10;
   final int silverCount = 5;
   final int bronzeCount = 7;
-  final int wordsLearned = 500;
   final int exercisesCompleted = 7;
   final int quizzesCompleted = 10;
+  String userName = "User";
+  int grade = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _retrieveUserInfo();
+  }
+
+  Future<void> _retrieveUserInfo() async {
+    try {
+      final userJson = await secureStorage.read(key: "user");
+      if (userJson != null) {
+        final userData = jsonDecode(userJson);
+        setState(() {
+          userName = userData["data"]["name"] ?? "User";
+          grade = userData["data"]["currentGrade"] ?? 1;
+        });
+      } else {
+        setState(() {
+          userName = "User";
+          grade = 1;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        userName = "User";
+        grade = 1;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Progress & Achievements",
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          TextButton(
+            onPressed: () async {
+              final storage = const FlutterSecureStorage();
+              await storage.delete(key: "token");
+              await storage.delete(key: "userKey");
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const WelcomeScreen()),
+              );
+            },
+            child: const Text(
+              "Logout",
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 75),
               Stack(
                 clipBehavior: Clip.none,
                 children: [
@@ -54,18 +109,17 @@ class ProgressAchievementsScreen extends StatelessWidget {
                         const SizedBox(width: 30),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Text(
-                              "Sheetaal Gandhi",
-                              style: TextStyle(
+                              userName,
+                              style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
                                   color: Colors.white),
                             ),
                             Text(
-                              "Grade - 7",
-                              style:
-                                  TextStyle(fontSize: 16, color: Colors.white),
+                              "Grade $grade",
+                              style: const TextStyle(fontSize: 16, color: Colors.white),
                             ),
                           ],
                         )
@@ -103,16 +157,16 @@ class ProgressAchievementsScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 50),
-              Wrap(
-                alignment: WrapAlignment.center,
-                spacing: 16,
-                runSpacing: 16,
-                children: [
-                  _buildStatCard("assets/images/book.png", "$wordsLearned\nNo of words learnt"),
-                  _buildStatCard("assets/images/diamond.png", "$diamondCount\nTotal diamonds"),
-                  _buildStatCard("assets/images/exercises.png", "$exercisesCompleted\nExercises complete"),
-                  _buildStatCard("assets/images/quiz_image.png", "$quizzesCompleted\nCompleted quiz"),
-                ],
+              Center(
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 16,
+                  runSpacing: 16,
+                  children: [
+                    _buildStatCard("assets/images/exercises.png", "$exercisesCompleted\nExercises Completed"),
+                    _buildStatCard("assets/images/quiz_image.png", "$quizzesCompleted\nCompleted Quizzes"),
+                  ],
+                ),
               ),
               const SizedBox(height: 30),
             ],
@@ -147,7 +201,7 @@ class ProgressAchievementsScreen extends StatelessWidget {
 
   Widget _buildStatCard(String imagePath, String label) {
     return Container(
-      width: 150,
+      width: 250,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: AppColors.background,
@@ -159,11 +213,12 @@ class ProgressAchievementsScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Image.asset(imagePath, width: 40, height: 40),
+          Image.asset(imagePath, width: 60, height: 60),
           const SizedBox(height: 8),
-          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14)),
+          Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 18)),
         ],
       ),
     );
   }
 }
+

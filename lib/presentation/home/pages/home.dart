@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:spell_champ_frontend/presentation/home/pages/exercises.dart';
 import 'package:spell_champ_frontend/presentation/home/pages/QuizzesPage.dart';
+import 'package:spell_champ_frontend/presentation/home/pages/dashboard.dart';
 
 class ExerciseHomePage extends StatefulWidget {
   const ExerciseHomePage({super.key});
@@ -258,6 +259,10 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
       child: GestureDetector(
         onTap: () async {
           // Navigate to profile/settings
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const ProgressAchievementsScreen()),
+          );
         },
         child: Image.asset(
           "assets/images/account.png",
