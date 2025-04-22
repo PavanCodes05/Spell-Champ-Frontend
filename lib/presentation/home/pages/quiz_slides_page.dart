@@ -35,7 +35,7 @@ class _QuizSlidesPageState extends State<QuizSlidesPage> {
           final quiz = widget.quizList[index];
           final type = quiz['type'];
 
-          Widget child;
+          late Widget child;
 
           switch (type) {
             case 'fill-in':
@@ -65,7 +65,7 @@ class _QuizSlidesPageState extends State<QuizSlidesPage> {
               );
               break;
             default:
-              child = Center(child: Text("Unsupported quiz type"));
+              child = const Center(child: Text("Unsupported quiz type"));
           }
 
           return Stack(
@@ -104,8 +104,8 @@ class _QuizSlidesPageState extends State<QuizSlidesPage> {
   void _nextPage() {
     if (_pageController.page!.toInt() < widget.quizList.length) {
       _pageController.nextPage(
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.easeInOut,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOutCubic,
       );
     } else {
       Navigator.pop(context); // Quiz done
