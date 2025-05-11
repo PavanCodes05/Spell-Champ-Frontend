@@ -7,6 +7,9 @@ class ProgressProvider with ChangeNotifier {
   final _storage = const FlutterSecureStorage();
 
   final Set<String> completedExerciseIds = {};
+  final Set<String> completedQuizIds = {};
+
+  final Set<String> quizTrophies = {};
 
   int exercisesCompleted = 0;
   int quizzesCompleted = 0;
@@ -76,6 +79,24 @@ class ProgressProvider with ChangeNotifier {
     notifyListeners();
   }
 }
+
+  void markQuizCompleted(int marks, String id) {
+    if (!completedQuizIds.contains(id)) {
+      completedQuizIds.add(id);
+      quizzesCompleted++;
+      if (marks >= 8) {
+        awardTrophy("gold");
+      }
+      if (marks >= 6) {
+        awardTrophy("silver");
+      }
+      if (marks >= 4) {
+        awardTrophy("bronze");
+      }
+      _saveToStorage();
+      notifyListeners();
+    }
+  }
 
   void awardTrophy(String type) {
     if (type == "gold") gold++;

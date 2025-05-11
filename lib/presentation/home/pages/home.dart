@@ -367,8 +367,3 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
     );
   }
 }
-
-
-
-
-
