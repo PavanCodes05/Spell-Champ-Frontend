@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -6,10 +7,10 @@ import 'package:http/http.dart' as http;
 class ProgressProvider with ChangeNotifier {
   final _storage = const FlutterSecureStorage();
 
-  final Set<String> completedExerciseIds = {};
-  final Set<String> completedQuizIds = {};
+  Set<String> completedExerciseIds = {};
+  Set<String> completedQuizIds = {};
 
-  final Set<String> quizTrophies = {};
+  Map<String, String> quizTrophies = {};
 
   int exercisesCompleted = 0;
   int quizzesCompleted = 0;
@@ -34,6 +35,10 @@ class ProgressProvider with ChangeNotifier {
       gold = trophies["gold"] ?? 0;
       silver = trophies["silver"] ?? 0;
       bronze = trophies["bronze"] ?? 0;
+
+      completedExerciseIds = Set<String>.from(decoded["completedExerciseIds"] ?? []);
+      completedQuizIds = Set<String>.from(decoded["completedQuizIds"] ?? []);
+      quizTrophies = Map<String, String>.from(decoded["quizTrophies"] ?? {});
     }
     notifyListeners();
   }
@@ -47,7 +52,10 @@ class ProgressProvider with ChangeNotifier {
         "gold": gold,
         "silver": silver,
         "bronze": bronze,
-      }
+      },
+      "completedExerciseIds": completedExerciseIds.toList(),
+      "completedQuizIds": completedQuizIds.toList(),
+      "quizTrophies": quizTrophies,
     };
     await _storage.write(key: "progress", value: jsonEncode(data));
   }
@@ -84,19 +92,25 @@ class ProgressProvider with ChangeNotifier {
     if (!completedQuizIds.contains(id)) {
       completedQuizIds.add(id);
       quizzesCompleted++;
-      if (marks >= 8) {
-        awardTrophy("gold");
+
+      final trophy = marks >= 8
+          ? "gold"
+          : marks >= 6
+              ? "silver"
+              : marks >= 4
+                  ? "bronze"
+                  : null;
+
+      if (trophy != null) {
+        quizTrophies[id] = trophy;
+        awardTrophy(trophy);
       }
-      if (marks >= 6) {
-        awardTrophy("silver");
-      }
-      if (marks >= 4) {
-        awardTrophy("bronze");
-      }
+
       _saveToStorage();
       notifyListeners();
     }
   }
+
 
   void awardTrophy(String type) {
     if (type == "gold") gold++;
@@ -128,6 +142,10 @@ class ProgressProvider with ChangeNotifier {
       gold = trophies["gold"] ?? 0;
       silver = trophies["silver"] ?? 0;
       bronze = trophies["bronze"] ?? 0;
+
+      completedExerciseIds = Set<String>.from(data["completedExerciseIds"] ?? []);
+      completedQuizIds = Set<String>.from(data["completedQuizIds"] ?? []);
+      quizTrophies = Map<String, String>.from(data["quizTrophies"] ?? {});
 
       await _saveToStorage();
       notifyListeners();
@@ -168,6 +186,9 @@ class ProgressProvider with ChangeNotifier {
   void reset() {
     exercisesCompleted = 0;
     quizzesCompleted = 0;
+    completedExerciseIds = {};
+    completedQuizIds = {};
+    quizTrophies = {};
     diamonds = 0;
     gold = 0;
     silver = 0;
