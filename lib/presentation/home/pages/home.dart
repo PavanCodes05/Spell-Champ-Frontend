@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:spell_champ_frontend/presentation/home/pages/exercises.dart';
 import 'package:spell_champ_frontend/presentation/home/pages/QuizzesPage.dart';
 import 'package:spell_champ_frontend/presentation/home/pages/dashboard.dart';
+import 'package:spell_champ_frontend/presentation/home/pages/quiz_results.dart';
 import 'package:spell_champ_frontend/providers/progress_provider.dart';
 
 class ExerciseHomePage extends StatefulWidget {
@@ -21,6 +22,7 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
   int grade = 1;
   Map<String, List<Map<String, String>>> allExercises = {};
   Map<String, List<Map<String, dynamic>>> allQuizzes = {};
+  Map<String, String> quizTrophies = {};
   List<bool> dailyDrill = List.filled(6, false);
 
   @override
@@ -30,6 +32,7 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
     _retrieveExercises();
     _retrieveQuizExercises();
     _checkDailyLogin();
+    _retrieveQuizTrophies();
   }
 
   Future<void> _retrieveUserInfo() async {
@@ -103,6 +106,14 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
       });
     }
   }
+
+  void _retrieveQuizTrophies() {
+    final trophies = Provider.of<ProgressProvider>(context, listen: false).quizTrophies;
+    setState(() {
+      quizTrophies = Map<String, String>.from(trophies); // Already a Map
+    });
+  }
+
 
   Future<void> _checkDailyLogin() async {
     final lastLoginDateStr = await secureStorage.read(key: "lastLoginDate");
@@ -311,7 +322,7 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => QuizzesPage(data: allQuizzes)),
+          MaterialPageRoute(builder: (_) => QuizzesPage(grade: grade.toString(), data: allQuizzes,)),
         );
       },
       child: Stack(
@@ -342,28 +353,37 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
   }
 
   Widget _buildResultCard() {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          height: 159,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            color: Colors.white,
-            boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 10)],
-          ),
-          child: const Center(
-            child: Text(
-              "RESULTS",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF27135E)),
+    return GestureDetector(
+      onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => QuizResultsPage(grade: grade)
+        )
+      );
+      },
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            height: 159,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+              color: Colors.white,
+              boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 10)],
+            ),
+            child: const Center(
+              child: Text(
+                "RESULTS",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF27135E)),
+              ),
             ),
           ),
-        ),
-        Positioned(left: 5, top: 5, child: Image.asset("assets/images/result-image.png", width: 50.61, height: 51.75)),
-        Positioned(right: 0, top: 0, child: Image.asset("assets/images/trophy 1.png", width: 55, height: 54)),
-        Positioned(left: 5, bottom: 5, child: Image.asset("assets/images/trophy 2.png", width: 30.94, height: 28.51)),
-        Positioned(right: -18, bottom: -35, child: Image.asset("assets/images/trophy 3.png", width: 75, height: 73)),
-      ],
+          Positioned(left: 5, top: 5, child: Image.asset("assets/images/result-image.png", width: 50.61, height: 51.75)),
+          Positioned(right: 0, top: 0, child: Image.asset("assets/images/trophy 1.png", width: 55, height: 54)),
+          Positioned(left: 5, bottom: 5, child: Image.asset("assets/images/trophy 2.png", width: 30.94, height: 28.51)),
+          Positioned(right: -18, bottom: -35, child: Image.asset("assets/images/trophy 3.png", width: 75, height: 73)),
+        ],
+      ),
     );
   }
 }

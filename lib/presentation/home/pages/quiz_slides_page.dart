@@ -1,11 +1,21 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'missingWords.dart';
 import 'pickImage.dart';
+import 'package:provider/provider.dart';
+import 'package:spell_champ_frontend/providers/progress_provider.dart';
 
 class QuizSlidesPage extends StatefulWidget {
   final List<Map<String, dynamic>> quizList;
+  final String grade;
+  final int exerciseNumber;
 
-  const QuizSlidesPage({super.key, required this.quizList});
+  const QuizSlidesPage({
+    super.key,
+    required this.quizList,
+    required this.grade,
+    required this.exerciseNumber,
+  });
 
   @override
   State<QuizSlidesPage> createState() => _QuizSlidesPageState();
@@ -24,6 +34,14 @@ class _QuizSlidesPageState extends State<QuizSlidesPage> {
         itemCount: widget.quizList.length + 1,
         itemBuilder: (context, index) {
           if (index == widget.quizList.length) {
+            Provider.of<ProgressProvider>(context, listen: false).markQuizCompleted(
+              _correctAnswers, 
+              "quiz${widget.grade}${widget.exerciseNumber}"
+            );
+
+            if (kDebugMode) {
+              debugPrint("Done!");
+            }
             return Center(
               child: Text(
                 'Correct answers: $_correctAnswers/${widget.quizList.length}',
@@ -108,9 +126,14 @@ class _QuizSlidesPageState extends State<QuizSlidesPage> {
         curve: Curves.easeInOutCubic,
       );
     } else {
-      Navigator.pop(context); // Quiz done
+      Provider.of<ProgressProvider>(context, listen: false).markQuizCompleted(
+        _correctAnswers, 
+        "quiz${widget.grade}${widget.exerciseNumber}"
+      );
+      if (kDebugMode) {
+        debugPrint("Quiz done");
+      }
     }
   }
 }
-
 

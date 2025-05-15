@@ -1,12 +1,40 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:spell_champ_frontend/providers/progress_provider.dart';
 
 class QuizResultsPage extends StatelessWidget {
-  final Map<String, String?> quizTrophies;
+  final int grade;
+  const QuizResultsPage({super.key, required this.grade});
 
-  QuizResultsPage({required this.quizTrophies});
-  
   @override
   Widget build(BuildContext context) {
+    final quizTrophies = context.watch<ProgressProvider>().quizTrophies;
+
+    if (kDebugMode) {
+      print('QuizTrophies: ${jsonEncode(quizTrophies)}');
+    }
+
+    final currentGradeQuizzes = quizTrophies.keys
+        .where((key) => key.startsWith('quiz$grade'))
+        .toList();
+
+    if (currentGradeQuizzes.isEmpty) {
+      return Scaffold(
+        body: Center(
+          child: Text(
+            'No trophies won in the current grade',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(top: 40),
@@ -27,23 +55,25 @@ class QuizResultsPage extends StatelessWidget {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: quizTrophies.length,
+                itemCount: currentGradeQuizzes.length,
                 itemBuilder: (context, index) {
-                  final quizKey = quizTrophies.keys.elementAt(index);
+                  final quizKey = currentGradeQuizzes[index];
                   final trophy = quizTrophies[quizKey];
 
                   return Container(
                     margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
                     padding: const EdgeInsets.all(25),
                     decoration: BoxDecoration(
-                      color: trophy != null ? Color.fromRGBO(161, 160, 207, 1): Colors.white,
+                      color: trophy != null
+                          ? const Color.fromRGBO(161, 160, 207, 1)
+                          : Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 10)],
+                      boxShadow: [const BoxShadow(color: Colors.grey, blurRadius: 10)],
                     ),
                     child: Row(
                       children: [
                         Text(
-                          quizKey,
+                          'Quiz ${index + 1}',
                           style: const TextStyle(fontSize: 24),
                         ),
                         const SizedBox(width: 25),
@@ -88,5 +118,4 @@ class QuizResultsPage extends StatelessWidget {
     );
   }
 }
-
 

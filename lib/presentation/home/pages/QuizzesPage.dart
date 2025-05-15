@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_colors.dart';
-import 'quiz_slides_page.dart'; // You'll create this
+import 'quiz_slides_page.dart'; 
 
 class QuizzesPage extends StatelessWidget {
   final Map<String, List<Map<String, dynamic>>> data;
+  final String grade;
 
-  const QuizzesPage({super.key, required this.data});
+  const QuizzesPage({super.key, required this.data, required this.grade});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +53,7 @@ class QuizzesPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => QuizSlidesPage(quizList: quizList),
+                    builder: (context) => QuizSlidesPage(exerciseNumber: index + 1, grade: grade, quizList: quizList,),
                   ),
                 );
               },
