@@ -91,7 +91,18 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
         actions: [
           TextButton(
             onPressed: () async {
+              showDialog(
+                context: context,
+                barrierDismissible: false,
+                builder: (BuildContext context) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              );
+              await progress.syncToBackend();
               await secureStorage.deleteAll();
+              Navigator.of(context).pop();
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (_) => const WelcomeScreen()),

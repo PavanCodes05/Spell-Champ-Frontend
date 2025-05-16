@@ -158,8 +158,8 @@ class ProgressProvider with ChangeNotifier {
     final token = await _storage.read(key: "token");
     if (token == null) return;
 
-    final response = await http.post(
-      Uri.parse("https://your-backend.com/api/v1/user/progress"),
+    final response = await http.put(
+      Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/user/update-profile"),
       headers: {
         "Content-Type": "application/json",
         "Authorization": "Bearer $token"
@@ -171,8 +171,11 @@ class ProgressProvider with ChangeNotifier {
         "trophies": {
           "gold": gold,
           "silver": silver,
-          "bronze": bronze,
-        }
+          "bronze": bronze
+        },
+        "completedExerciseIds": completedExerciseIds.toList(),
+        "completedQuizIds": completedQuizIds.toList(),
+        "quizTrophies": quizTrophies
       }),
     );
 
