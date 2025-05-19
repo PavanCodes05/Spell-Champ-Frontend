@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 import 'package:spell_champ_frontend/presentation/home/pages/home.dart';
 import 'package:logger/logger.dart';
+
+import '../../../providers/progress_provider.dart';
 
 final logger = Logger();
 
@@ -109,6 +112,9 @@ class _GradeSelectionScreenState extends State<GradeSelectionScreen> with Ticker
 
       if (response.statusCode == 200) {
         await secureStorage.write(key: 'user', value: response.body);
+
+        await secureStorage.delete(key: "progress");
+        await context.read<ProgressProvider>().loadFromBackend();
 
         final exerciseInfo = await http.get(
           Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/grade/$grade/exercises"),
