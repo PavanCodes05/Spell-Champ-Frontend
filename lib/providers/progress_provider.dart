@@ -7,6 +7,9 @@ import 'package:http/http.dart' as http;
 class ProgressProvider with ChangeNotifier {
   final _storage = const FlutterSecureStorage();
 
+  String userName = "User";
+  int grade = 1;
+
   Set<String> completedExerciseIds = {};
   Set<String> completedQuizIds = {};
 
@@ -27,6 +30,9 @@ class ProgressProvider with ChangeNotifier {
     final data = await _storage.read(key: "progress");
     if (data != null) {
       final decoded = jsonDecode(data);
+
+      userName = decoded["name"] ?? "User";
+      grade = decoded["currentGrade"] ?? 1;
       exercisesCompleted = decoded["exercisesCompleted"] ?? 0;
       quizzesCompleted = decoded["quizzesCompleted"] ?? 0;
       diamonds = decoded["diamonds"] ?? 0;
@@ -45,6 +51,8 @@ class ProgressProvider with ChangeNotifier {
 
   Future<void> _saveToStorage() async {
     final data = {
+      "name": userName,
+      "currentGrade": grade,
       "exercisesCompleted": exercisesCompleted,
       "quizzesCompleted": quizzesCompleted,
       "diamonds": diamonds,
@@ -133,7 +141,12 @@ class ProgressProvider with ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = jsonDecode(response.body)["data"];
+      if (kDebugMode) debugPrint(data.toString());
+
+      userName = data["name"] ?? "User";
+      grade = data["currentGrade"] ?? 1;
+
       exercisesCompleted = data["exercisesCompleted"] ?? 0;
       quizzesCompleted = data["quizzesCompleted"] ?? 0;
       diamonds = data["diamonds"] ?? 0;
@@ -187,6 +200,8 @@ class ProgressProvider with ChangeNotifier {
   }
 
   void reset() {
+    userName = "User";
+    grade = 1;
     exercisesCompleted = 0;
     quizzesCompleted = 0;
     completedExerciseIds = {};
