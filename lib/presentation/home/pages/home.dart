@@ -18,7 +18,7 @@ class ExerciseHomePage extends StatefulWidget {
 
 class _ExerciseHomePageState extends State<ExerciseHomePage> {
   final secureStorage = const FlutterSecureStorage();
-  String userName = "";
+  // String userName = "";
   int grade = 1;
   Map<String, List<Map<String, String>>> allExercises = {};
   Map<String, List<Map<String, dynamic>>> allQuizzes = {};
@@ -28,34 +28,10 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
   @override
   void initState() {
     super.initState();
-    _retrieveUserInfo();
     _retrieveExercises();
     _retrieveQuizExercises();
     _checkDailyLogin();
     _retrieveQuizTrophies();
-  }
-
-  Future<void> _retrieveUserInfo() async {
-    try {
-      final userJson = await secureStorage.read(key: "user");
-      if (userJson != null) {
-        final userData = jsonDecode(userJson);
-        setState(() {
-          userName = userData["data"]["name"] ?? "User";
-          grade = userData["data"]["currentGrade"] ?? 1;
-        });
-      } else {
-        setState(() {
-          userName = "User";
-          grade = 1;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        userName = "User";
-        grade = 1;
-      });
-    }
   }
 
   Future<void> _retrieveExercises() async {
@@ -159,7 +135,7 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
                     ),
                   ),
                   Text(
-                    userName,
+                    progress.userName,
                     style: const TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
@@ -195,7 +171,7 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => ExercisesPage(exercises: allExercises, grade: grade)),
+                        MaterialPageRoute(builder: (_) => ExercisesPage(exercises: allExercises, grade: progress.grade)),
                       );
                     },
                     child: _buildExerciseCard(),
@@ -357,7 +333,7 @@ class _ExerciseHomePageState extends State<ExerciseHomePage> {
       onTap: () {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => QuizResultsPage(grade: grade)
+        MaterialPageRoute(builder: (_) => QuizResultsPage()
         )
       );
       },

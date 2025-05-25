@@ -53,7 +53,7 @@ class QuizzesPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => QuizSlidesPage(exerciseNumber: index + 1, grade: grade, quizList: quizList,),
+                    builder: (context) => QuizSlidesPage(exerciseNumber: index + 1, quizList: quizList,),
                   ),
                 );
               },

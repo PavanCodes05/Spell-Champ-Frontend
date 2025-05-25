@@ -6,12 +6,12 @@ import 'package:provider/provider.dart';
 import 'package:spell_champ_frontend/providers/progress_provider.dart';
 
 class QuizResultsPage extends StatelessWidget {
-  final int grade;
-  const QuizResultsPage({super.key, required this.grade});
+  const QuizResultsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final quizTrophies = context.watch<ProgressProvider>().quizTrophies;
+    final grade = context.watch<ProgressProvider>().grade;
 
     if (kDebugMode) {
       print('QuizTrophies: ${jsonEncode(quizTrophies)}');

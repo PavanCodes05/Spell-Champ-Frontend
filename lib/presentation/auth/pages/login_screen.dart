@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:spell_champ_frontend/core/configs/theme/app_colors.dart';
-import 'package:spell_champ_frontend/presentation/home/pages/exercises.dart';
 import 'package:logger/logger.dart';
+import 'package:spell_champ_frontend/presentation/home/pages/home.dart';
+import 'package:spell_champ_frontend/providers/progress_provider.dart';
 
 final secureStorage = const FlutterSecureStorage();
 final logger = Logger();
@@ -28,108 +31,83 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isLoading = false;
 
-  void _login(BuildContext context) async {
-    setState(() {
-      _isLoading = true;
-    });
+void _login(BuildContext context) async {
+  setState(() => _isLoading = true);
 
-    final email = emailController.text.trim();
-    final password = passwordController.text;
+  final email = emailController.text.trim();
+  final password = passwordController.text;
 
-    if (email.isEmpty || !isValidEmail(email)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter a valid email")),
-      );
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
+  if (email.isEmpty || !isValidEmail(email)) {
+    _showSnack("Please enter a valid email");
+    setState(() => _isLoading = false);
+    return;
+  }
 
-    if (password.isEmpty || password.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Password must be at least 6 characters")),
-      );
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
+  if (password.isEmpty || password.length < 6) {
+    _showSnack("Password must be at least 6 characters");
+    setState(() => _isLoading = false);
+    return;
+  }
 
-    final response = await http.post(Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/auth/login"),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"email": email, "password": password}));
+  try {
+    final response = await http.post(
+      Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/auth/login"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"email": email, "password": password}),
+    );
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      final jsonResponse = jsonDecode(response.body);
+      final data = jsonDecode(response.body)["data"];
+      final token = data["token"] as String;
 
-      final token = jsonResponse["data"]["token"];
-      final user = jsonResponse["data"];
-
-      // Store in secure storage
+      await secureStorage.delete(key: "progress");
       await secureStorage.write(key: "token", value: token);
-      await secureStorage.write(key: "user", value: jsonEncode(user));
+      await secureStorage.write(key: "user", value: jsonEncode(data));
 
-      final userData = await secureStorage.read(key: "user");
-      final decodedUser = jsonDecode(userData!);
+      final grade = data["currentGrade"];
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Login Successful")),
-      );
+      // 🧠 Load exercises and quizzes before UI starts
+      await _loadExercisesAndQuizzes(grade);
 
-      final grade = decodedUser["currentGrade"];
-      final exerciseInfo = await http.get(Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/grade/$grade/exercises"));
+      // ✅ Wait for progress to load
+      await context.read<ProgressProvider>().loadFromBackend();
+      await Future.delayed(Duration(milliseconds: 100));
 
-      // logger.i("exerciseInfo: ${exerciseInfo.body}");
 
-      if (exerciseInfo.statusCode == 200 || exerciseInfo.statusCode == 201) {
-        final exerciseInfoJson = jsonDecode(exerciseInfo.body);
-        final exercises = exerciseInfoJson["data"];
-        // logger.i("exercises: $exercises");
-        await secureStorage.write(key: "exercises", value: jsonEncode(exercises));
-      }
-
-      final exercises = await secureStorage.read(key: "exercises");
-      final decodedExercises = jsonDecode(exercises!) as Map<String, dynamic>;
-
-      final properlyTyped = decodedExercises.map((key, value) {
-        return MapEntry(
-          key,
-          (value as List).map<Map<String, String>>((item) => Map<String, String>.from(item)).toList(),
-        );
-      });
-
+      if (!mounted) return;
+      if (kDebugMode) debugPrint("Navigating to ExerciseHomePage");
       Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => ExercisesPage(exercises: properlyTyped, grade: grade,),
-          transitionDuration: const Duration(milliseconds: 500),
-          transitionsBuilder: (_, Animation<double> animation, __, Widget child) {
-            return SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(1, 0),
-                end: Offset.zero,
-              ).animate(animation),
-              child: child,
-            );
-          },
-        ),
+        MaterialPageRoute(builder: (_) => const ExerciseHomePage()),
       );
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Login Successful")),
-      );
-      setState(() {
-        _isLoading = false;
-      });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: ${jsonDecode(response.body)["error"]["code"]}")),
-      );
-      setState(() {
-        _isLoading = false;
-      });
+      _showSnack("Login failed: ${jsonDecode(response.body)["error"]["code"]}");
     }
+  } catch (e) {
+    _showSnack("An error occurred: $e");
+  } finally {
+    setState(() => _isLoading = false);
   }
+}
+
+void _showSnack(String msg) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+}
+
+Future<void> _loadExercisesAndQuizzes(int grade) async {
+  final exRes = await http.get(Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/grade/$grade/exercises"));
+  final quizRes = await http.get(Uri.parse("https://spell-champ-backend-2.onrender.com/api/v1/grade/$grade/quizzes"));
+
+  if (exRes.statusCode == 200) {
+    final exercises = jsonDecode(exRes.body)["data"];
+    await secureStorage.write(key: "exercises", value: jsonEncode(exercises));
+  }
+
+  if (quizRes.statusCode == 200) {
+    final quizzes = jsonDecode(quizRes.body)["data"];
+    await secureStorage.write(key: "quizzes", value: jsonEncode(quizzes));
+  }
+}
+
 
   @override
   Widget build(BuildContext context) {

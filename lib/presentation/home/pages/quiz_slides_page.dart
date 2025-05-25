@@ -7,13 +7,11 @@ import 'package:spell_champ_frontend/providers/progress_provider.dart';
 
 class QuizSlidesPage extends StatefulWidget {
   final List<Map<String, dynamic>> quizList;
-  final String grade;
   final int exerciseNumber;
 
   const QuizSlidesPage({
     super.key,
     required this.quizList,
-    required this.grade,
     required this.exerciseNumber,
   });
 
@@ -22,6 +20,7 @@ class QuizSlidesPage extends StatefulWidget {
 }
 
 class _QuizSlidesPageState extends State<QuizSlidesPage> {
+  final progress = ProgressProvider();
   final PageController _pageController = PageController();
   int _correctAnswers = 0;
 
@@ -36,7 +35,7 @@ class _QuizSlidesPageState extends State<QuizSlidesPage> {
           if (index == widget.quizList.length) {
             Provider.of<ProgressProvider>(context, listen: false).markQuizCompleted(
               _correctAnswers, 
-              "quiz${widget.grade}${widget.exerciseNumber}"
+              "quiz${progress.grade}${widget.exerciseNumber}"
             );
 
             if (kDebugMode) {
@@ -128,7 +127,7 @@ class _QuizSlidesPageState extends State<QuizSlidesPage> {
     } else {
       Provider.of<ProgressProvider>(context, listen: false).markQuizCompleted(
         _correctAnswers, 
-        "quiz${widget.grade}${widget.exerciseNumber}"
+        "quiz${progress.grade}${widget.exerciseNumber}"
       );
       if (kDebugMode) {
         debugPrint("Quiz done");

@@ -113,6 +113,7 @@ class _GradeSelectionScreenState extends State<GradeSelectionScreen> with Ticker
       if (response.statusCode == 200) {
         await secureStorage.write(key: 'user', value: response.body);
 
+        await context.read<ProgressProvider>().syncToBackend();
         await secureStorage.delete(key: "progress");
         await context.read<ProgressProvider>().loadFromBackend();
 

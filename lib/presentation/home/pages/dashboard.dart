@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
@@ -21,8 +20,6 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
   late ProgressProvider progress;
   bool _initialized = false;
 
-  String userName = "User";
-  int grade = 1;
   int diamondCount = 0;
   int goldCount = 0;
   int silverCount = 0;
@@ -34,7 +31,6 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
   @override
   void initState() {
     super.initState();
-    _retrieveUserInfo();
   }
 
   @override
@@ -57,24 +53,6 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
       quizzesCompleted = progress.quizzesCompleted;
       progressPercent = ((exercisesCompleted + quizzesCompleted) / 20).clamp(0, 1).toDouble();
     });
-  }
-
-  Future<void> _retrieveUserInfo() async {
-    try {
-      final userJson = await secureStorage.read(key: "user");
-      if (userJson != null) {
-        final userData = jsonDecode(userJson);
-        setState(() {
-          userName = userData["data"]["name"] ?? "User";
-          grade = userData["data"]["currentGrade"] ?? 1;
-        });
-      }
-    } catch (_) {
-      setState(() {
-        userName = "User";
-        grade = 1;
-      });
-    }
   }
 
   @override
@@ -139,7 +117,7 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              userName,
+                              progress.userName,
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 18,
@@ -147,7 +125,7 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
                               ),
                             ),
                             Text(
-                              "Grade $grade",
+                              "Grade ${progress.grade}",
                               style: const TextStyle(fontSize: 16, color: Colors.white),
                             ),
                           ],
@@ -208,7 +186,7 @@ class _ProgressAchievementsScreenState extends State<ProgressAchievementsScreen>
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => GradeSelectionScreen(userName: userName),
+                        builder: (_) => GradeSelectionScreen(userName: progress.userName),
                       ),
                     );
                   },
