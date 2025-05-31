@@ -1,29 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-// missingWords.dart
 class MissingWordsPage extends StatefulWidget {
   final Map<String, dynamic> data;
   final ValueChanged<bool> onNext;
 
-  const MissingWordsPage({super.key, required this.data, required this.onNext});
+  const MissingWordsPage({
+    super.key,
+    required this.data,
+    required this.onNext,
+  });
 
   @override
   _MissingWordsPageState createState() => _MissingWordsPageState();
 }
 
-class _MissingWordsPageState extends State<MissingWordsPage> with SingleTickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
-  final _answerControllers = <TextEditingController>[];
+class _MissingWordsPageState extends State<MissingWordsPage>
+    with SingleTickerProviderStateMixin {
+  final _controller = TextEditingController();
+  late FocusNode _focusNode;
+
   late final AnimationController _animationController;
   late final Animation<Offset> _offsetAnimation;
+
+  late List<String> givenLetters;
+  late List<int> blankIndices;
+  String userInput = "";
+  bool _keyboardVisible = true;
 
   @override
   void initState() {
     super.initState();
-    for (var i = 0; i < widget.data['given_letters'].length; i++) {
-      _answerControllers.add(TextEditingController());
+
+    _focusNode = FocusNode();
+
+    givenLetters = List<String>.from(widget.data['given_letters']);
+    blankIndices = [];
+
+    for (int i = 0; i < givenLetters.length; i++) {
+      if (givenLetters[i] == "") {
+        blankIndices.add(i);
+      }
     }
+
+    _controller.clear();
+    _controller.addListener(() {
+      final raw = _controller.text.toUpperCase();
+      if (raw.length <= blankIndices.length) {
+        setState(() => userInput = raw);
+      } else {
+        _controller.text = userInput;
+        _controller.selection = TextSelection.collapsed(offset: userInput.length);
+      }
+    });
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -35,114 +65,162 @@ class _MissingWordsPageState extends State<MissingWordsPage> with SingleTickerPr
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
+
     _animationController.forward();
+
+    if (_keyboardVisible) {
+      _focusNode.requestFocus();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _animationController.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _handleSubmit() {
+    final answer = List.generate(givenLetters.length, (i) {
+      return givenLetters[i] != ""
+          ? givenLetters[i].toUpperCase()
+          : (blankIndices.indexOf(i) < userInput.length
+              ? userInput[blankIndices.indexOf(i)]
+              : "");
+    }).join("");
+
+    final correct = widget.data['correct_answer'].toUpperCase() == answer;
+    widget.onNext(correct);
+  }
+
+  void _toggleKeyboard() {
+    setState(() {
+      _keyboardVisible = !_keyboardVisible;
+      if (_keyboardVisible) {
+        _focusNode.requestFocus();
+      } else {
+        _focusNode.unfocus();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.purple[50],
-      body: Center(
+      body: SafeArea(
         child: SlideTransition(
           position: _offsetAnimation,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(widget.data['title'], style: const TextStyle(fontSize: 24)),
-              const SizedBox(height: 20),
-              Image.network(
-                widget.data['image_url'],
-                height: 150,
-                fit: BoxFit.cover,
-                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
-                          : null,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 500),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.data['title'],
+                      style: const TextStyle(fontSize: 24),
+                      textAlign: TextAlign.center,
                     ),
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: Form(
-                  key: _formKey,
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 0,
-                    alignment: WrapAlignment.center,
-                    runAlignment: WrapAlignment.center,
-                    children: List.generate(widget.data['given_letters'].length, (i) {
-                      final letter = widget.data['given_letters'][i];
-                      return Container(
-                        constraints: const BoxConstraints(minWidth: 48, maxWidth: 48),
-                        height: 48,
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 2, color: Colors.black),
-                        ),
-                        child: Center(
-                          child: letter != ""
-                              ? Text(
-                                  letter.toUpperCase(),
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                              : TextFormField(
-                                  controller: _answerControllers[i],
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                  ),
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(RegExp("[a-zA-Z]")),
-                                    UpperCaseTextFormatter(),
-                                  ],
-                                ),
-                        ),
-                      );
-                    }),
-                  ),
+                    const SizedBox(height: 20),
+
+                    // Image
+                    Image.network(
+                      widget.data['image_url'],
+                      height: 150,
+                      fit: BoxFit.contain,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return const CircularProgressIndicator();
+                      },
+                      errorBuilder: (_, __, ___) => const Text("Image error"),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Word boxes
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 6,
+                      runSpacing: 10,
+                      children: List.generate(givenLetters.length, (i) {
+                        final isPreFilled = givenLetters[i] != "";
+                        final displayChar = isPreFilled
+                            ? givenLetters[i].toUpperCase()
+                            : (blankIndices.indexOf(i) < userInput.length
+                                ? userInput[blankIndices.indexOf(i)]
+                                : "");
+
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              displayChar,
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Container(
+                              width: 30,
+                              height: 6,
+                              color: Colors.black54,
+                            ),
+                          ],
+                        );
+                      }),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Keyboard toggle icon
+                    IconButton(
+                      onPressed: _toggleKeyboard,
+                      icon: Icon(
+                        _keyboardVisible ? Icons.keyboard_hide : Icons.keyboard,
+                        size: 30,
+                      ),
+                    ),
+
+                    // Hidden input
+                    SizedBox(
+                      width: 0,
+                      height: 0,
+                      child: TextField(
+                        controller: _controller,
+                        focusNode: _focusNode,
+                        autofocus: true,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp("[a-zA-Z]")),
+                          UpperCaseTextFormatter(),
+                        ],
+                        onChanged: (val) {
+                          setState(() {
+                            userInput = val.toUpperCase();
+                          });
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Submit Button
+                    ElevatedButton(
+                      onPressed: _handleSubmit,
+                      child: const Text("Next"),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    final answer = List.generate(widget.data['given_letters'].length, (i) {
-                      return widget.data['given_letters'][i] != ""
-                          ? widget.data['given_letters'][i].toUpperCase()
-                          : _answerControllers[i].text.toUpperCase();
-                    }).join("");
-                    final correct = widget.data['correct_answer'] == answer;
-                    widget.onNext(correct);
-                  }
-                },
-                child: const Text("Next"),
-              )
-            ],
+            ),
           ),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    for (final controller in _answerControllers) {
-      controller.dispose();
-    }
-    _animationController.dispose();
-    super.dispose();
   }
 }
 
@@ -158,4 +236,3 @@ class UpperCaseTextFormatter extends TextInputFormatter {
     );
   }
 }
-

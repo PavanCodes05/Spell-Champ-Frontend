@@ -34,17 +34,21 @@ class _QuizSlidesPageState extends State<QuizSlidesPage> {
         itemBuilder: (context, index) {
           if (index == widget.quizList.length) {
             Provider.of<ProgressProvider>(context, listen: false).markQuizCompleted(
-              _correctAnswers, 
-              "quiz${progress.grade}${widget.exerciseNumber}"
+              _correctAnswers,
+              "quiz${progress.grade}${widget.exerciseNumber}",
             );
 
             if (kDebugMode) {
               debugPrint("Done!");
             }
-            return Center(
-              child: Text(
-                'Correct answers: $_correctAnswers/${widget.quizList.length}',
-                style: const TextStyle(fontSize: 32),
+
+            return _buildSlideWrapper(
+              index: index,
+              child: Center(
+                child: Text(
+                  'Correct answers: $_correctAnswers/${widget.quizList.length}',
+                  style: const TextStyle(fontSize: 32),
+                ),
               ),
             );
           }
@@ -85,34 +89,7 @@ class _QuizSlidesPageState extends State<QuizSlidesPage> {
               child = const Center(child: Text("Unsupported quiz type"));
           }
 
-          return Stack(
-            children: [
-              child,
-              Positioned(
-                top: 16,
-                left: 16,
-                child: CircleAvatar(
-                  backgroundColor: Colors.black,
-                  child: Text(
-                    '${index + 1}',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 22,
-                left: 22,
-                child: Text(
-                  '${index + 1}',
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          );
+          return _buildSlideWrapper(index: index, child: child);
         },
       ),
     );
@@ -126,13 +103,54 @@ class _QuizSlidesPageState extends State<QuizSlidesPage> {
       );
     } else {
       Provider.of<ProgressProvider>(context, listen: false).markQuizCompleted(
-        _correctAnswers, 
-        "quiz${progress.grade}${widget.exerciseNumber}"
+        _correctAnswers,
+        "quiz${progress.grade}${widget.exerciseNumber}",
       );
       if (kDebugMode) {
         debugPrint("Quiz done");
       }
     }
   }
-}
 
+  Widget _buildSlideWrapper({required Widget child, required int index}) {
+    return Column(
+      children: [
+        const SizedBox(height: 24),
+        Row(
+          children: [
+            const SizedBox(width: 16),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                const CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Colors.black,
+                ),
+                Text(
+                  '${index + 1}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 600),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: child,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
