@@ -128,7 +128,7 @@ class _WordSlidesState extends State<WordSlides> with SingleTickerProviderStateM
   }
 
   void _speakWord() async {
-    await _flutterTts.setLanguage("en-US");
+    await _flutterTts.setLanguage("en-GB");
     await _flutterTts.setPitch(0.8);
     await _flutterTts.setSpeechRate(0.5);
     await _flutterTts.speak(widget.data[_currentIndex]['word']!.toUpperCase());
